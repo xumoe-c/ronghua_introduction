@@ -1,0 +1,35 @@
+{
+    "name": "绒花非遗传承平台",
+    "version": "1.0.0",
+    "description": "绒花非物质文化遗产传承与发展HTML前端项目",
+    "main": "index.html",
+    "scripts": {
+        "start": "live-server --port=3000 --open=index.html",
+        "build": "echo 'Building project...' && echo 'Project built successfully'",
+        "serve": "python -m http.server 8000",
+        "dev": "live-server --port=3000 --watch=assets/css,assets/js,pages --open=index.html"
+    },
+    "keywords": [
+        "绒花",
+        "非遗",
+        "文化传承",
+        "HTML",
+        "前端",
+        "教育平台"
+    ],
+    "author": "绒花非遗项目组",
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {
+        "live-server": "^1.2.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ronghua-heritage/frontend.git"
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not dead"
+    ]
+}

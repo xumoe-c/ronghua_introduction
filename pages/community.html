@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区论坛 - 绒花非遗传承平台</title>
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/community.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="绒花" class="logo">
+                <span class="brand-text">绒花非遗</span>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="nav-toggle" onclick="toggleMobileMenu()" aria-label="切换菜单" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu-wrapper">
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">首页</a></li>
+                    <li><a href="encyclopedia.html" class="nav-link">非遗百科</a></li>
+                    <li><a href="tutorial.html" class="nav-link">视频教程</a></li>
+                    <li><a href="community.html" class="nav-link active">社区论坛</a></li>
+                    <li><a href="shop.html" class="nav-link">文创商城</a></li>
+                    <li><a href="game.html" class="nav-link">趣味闯关</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+
+            <!-- 移动端遮罩层 -->
+            <div class="nav-overlay" onclick="closeMobileMenu()"></div>
+        </nav>
+    </header>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">社区论坛</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 页面标题 -->
+        <section class="page-header">
+            <div class="container">
+                <h1>绒花爱好者社区</h1>
+                <p>分享创作心得，交流制作技巧，传承非遗文化</p>
+            </div>
+        </section>
+
+        <!-- 社区统计 -->
+        <section class="community-stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">2,847</div>
+                        <div class="stat-label">社区成员</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">1,256</div>
+                        <div class="stat-label">精彩帖子</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">8,934</div>
+                        <div class="stat-label">互动评论</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">456</div>
+                        <div class="stat-label">作品展示</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 论坛内容 -->
+        <section class="forum-content">
+            <div class="container">
+                <div class="forum-layout">
+                    <!-- 左侧主要内容 -->
+                    <div class="forum-main">
+                        <!-- 发帖按钮 -->
+                        <div class="post-actions">
+                            <button class="btn-primary btn-new-post" onclick="showNewPostModal()">
+                                ✏️ 发布新帖
+                            </button>
+                            <div class="sort-options">
+                                <select id="sortSelect" onchange="sortPosts()">
+                                    <option value="latest">最新发布</option>
+                                    <option value="hot">最热讨论</option>
+                                    <option value="recommended">精华推荐</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 帖子列表 -->
+                        <div class="posts-list" id="postsList">
+                            <!-- 精华帖 -->
+                            <div class="post-item featured" data-type="featured" data-time="1704067200">
+                                <div class="post-avatar">
+                                    <img src="../assets/images/user1.jpg" alt="赵老师">
+                                </div>
+                                <div class="post-content">
+                                    <div class="post-header">
+                                        <h3 class="post-title">
+                                            <span class="featured-badge">精华</span>
+                                            春节绒花制作全攻略 - 从选材到成品
+                                        </h3>
+                                        <div class="post-meta">
+                                            <span class="author">赵老师</span>
+                                            <span class="time">2小时前</span>
+                                            <span class="category">制作技巧</span>
+                                        </div>
+                                    </div>
+                                    <div class="post-excerpt">
+                                        新春佳节即将到来，很多朋友都想亲手制作一些绒花作品来装饰家居或作为礼品。今天我来分享一下春节主题绒花的完整制作流程，包括材料选择、配色技巧、造型设计等...
+                                    </div>
+                                    <div class="post-images">
+                                        <img src="../assets/images/post1.jpg" alt="春节绒花">
+                                        <img src="../assets/images/post2.jpg" alt="制作过程">
+                                        <img src="../assets/images/post3.jpg" alt="成品展示">
+                                    </div>
+                                    <div class="post-stats">
+                                        <span class="likes">❤️ 156</span>
+                                        <span class="comments">💬 23</span>
+                                        <span class="views">👀 1.2k</span>
+                                        <span class="shares">🔗 45</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 普通帖子 -->
+                            <div class="post-item" data-type="normal" data-time="1704063600">
+                                <div class="post-avatar">
+                                    <img src="../assets/images/user2.jpg" alt="小花">
+                                </div>
+                                <div class="post-content">
+                                    <div class="post-header">
+                                        <h3 class="post-title">求助：绒花颜色搭配问题</h3>
+                                        <div class="post-meta">
+                                            <span class="author">小花</span>
+                                            <span class="time">4小时前</span>
+                                            <span class="category">求助问答</span>
+                                        </div>
+                                    </div>
+                                    <div class="post-excerpt">
+                                        最近在制作一朵粉色的牡丹花，但是总感觉颜色搭配不够自然。请问大家有什么好的建议吗？是不是需要用渐变色的技巧？
+                                    </div>
+                                    <div class="post-stats">
+                                        <span class="likes">❤️ 28</span>
+                                        <span class="comments">💬 12</span>
+                                        <span class="views">👀 342</span>
+                                        <span class="shares">🔗 8</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 作品分享帖 -->
+                            <div class="post-item" data-type="showcase" data-time="1704060000">
+                                <div class="post-avatar">
+                                    <img src="../assets/images/user3.jpg" alt="艺术家小李">
+                                </div>
+                                <div class="post-content">
+                                    <div class="post-header">
+                                        <h3 class="post-title">
+                                            <span class="showcase-badge">作品</span>
+                                            我的第一件绒花作品 - 荷花
+                                        </h3>
+                                        <div class="post-meta">
+                                            <span class="author">艺术家小李</span>
+                                            <span class="time">6小时前</span>
+                                            <span class="category">作品展示</span>
+                                        </div>
+                                    </div>
+                                    <div class="post-excerpt">
+                                        终于完成了我的第一件绒花作品！虽然还有很多不足，但是看到成品的那一刻真的很有成就感。感谢老师们的指导！
+                                    </div>
+                                    <div class="post-images">
+                                        <img src="../assets/images/work1.jpg" alt="荷花作品">
+                                        <img src="../assets/images/work2.jpg" alt="细节特写">
+                                    </div>
+                                    <div class="post-stats">
+                                        <span class="likes">❤️ 89</span>
+                                        <span class="comments">💬 15</span>
+                                        <span class="views">👀 567</span>
+                                        <span class="shares">🔗 22</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 讨论帖 -->
+                            <div class="post-item" data-type="discussion" data-time="1704056400">
+                                <div class="post-avatar">
+                                    <img src="../assets/images/user4.jpg" alt="传统工艺爱好者">
+                                </div>
+                                <div class="post-content">
+                                    <div class="post-header">
+                                        <h3 class="post-title">绒花艺术的现代创新与传统保护</h3>
+                                        <div class="post-meta">
+                                            <span class="author">传统工艺爱好者</span>
+                                            <span class="time">8小时前</span>
+                                            <span class="category">文化讨论</span>
+                                        </div>
+                                    </div>
+                                    <div class="post-excerpt">
+                                        在学习绒花制作的过程中，我一直在思考一个问题：我们应该如何在保持传统工艺精髓的同时，让绒花艺术适应现代审美和生活需要？欢迎大家分享自己的观点...
+                                    </div>
+                                    <div class="post-stats">
+                                        <span class="likes">❤️ 42</span>
+                                        <span class="comments">💬 31</span>
+                                        <span class="views">👀 892</span>
+                                        <span class="shares">🔗 18</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 加载更多 -->
+                        <div class="load-more">
+                            <button class="btn-secondary" onclick="loadMorePosts()">加载更多帖子</button>
+                        </div>
+                    </div>
+
+                    <!-- 右侧边栏 -->
+                    <div class="forum-sidebar">
+                        <!-- 社区规则 -->
+                        <div class="sidebar-card">
+                            <h3>社区公约</h3>
+                            <ul class="rules-list">
+                                <li>🌸 尊重传统，传承文化</li>
+                                <li>💝 友善交流，互帮互助</li>
+                                <li>🎨 原创优先，标注来源</li>
+                                <li>📝 内容真实，禁止广告</li>
+                                <li>🤝 文明用语，和谐共处</li>
+                            </ul>
+                        </div>
+
+                        <!-- 热门话题 -->
+                        <div class="sidebar-card">
+                            <h3>热门话题</h3>
+                            <div class="hot-topics">
+                                <a href="#" class="topic-tag">#春节绒花</a>
+                                <a href="#" class="topic-tag">#新手入门</a>
+                                <a href="#" class="topic-tag">#颜色搭配</a>
+                                <a href="#" class="topic-tag">#工具推荐</a>
+                                <a href="#" class="topic-tag">#作品分享</a>
+                                <a href="#" class="topic-tag">#传统技法</a>
+                                <a href="#" class="topic-tag">#创新设计</a>
+                                <a href="#" class="topic-tag">#材料选择</a>
+                            </div>
+                        </div>
+
+                        <!-- 活跃用户 -->
+                        <div class="sidebar-card">
+                            <h3>活跃用户</h3>
+                            <div class="active-users">
+                                <div class="user-item">
+                                    <img src="../assets/images/user1.jpg" alt="赵老师">
+                                    <div class="user-info">
+                                        <div class="user-name">赵老师</div>
+                                        <div class="user-level">传承大师</div>
+                                    </div>
+                                    <div class="user-badge">🏆</div>
+                                </div>
+                                <div class="user-item">
+                                    <img src="../assets/images/user5.jpg" alt="花艺师小美">
+                                    <div class="user-info">
+                                        <div class="user-name">花艺师小美</div>
+                                        <div class="user-level">资深玩家</div>
+                                    </div>
+                                    <div class="user-badge">⭐</div>
+                                </div>
+                                <div class="user-item">
+                                    <img src="../assets/images/user6.jpg" alt="匠心独运">
+                                    <div class="user-info">
+                                        <div class="user-name">匠心独运</div>
+                                        <div class="user-level">优秀学员</div>
+                                    </div>
+                                    <div class="user-badge">🌟</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 最新活动 -->
+                        <div class="sidebar-card">
+                            <h3>最新活动</h3>
+                            <div class="activity-item">
+                                <div class="activity-title">春节主题作品征集</div>
+                                <div class="activity-time">截止：2025-02-10</div>
+                                <div class="activity-desc">分享你的春节绒花作品，有机会获得大师指导</div>
+                                <button class="btn-sm">参与活动</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 发帖模态框 -->
+    <div id="newPostModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeNewPostModal()">&times;</span>
+            <h2>发布新帖</h2>
+            <form id="newPostForm" onsubmit="submitNewPost(event)">
+                <div class="form-group">
+                    <label for="postTitle">标题：</label>
+                    <input type="text" id="postTitle" required maxlength="50" placeholder="请输入帖子标题（最多50字）">
+                </div>
+
+                <div class="form-group">
+                    <label for="postCategory">分类：</label>
+                    <select id="postCategory" required>
+                        <option value="">选择分类</option>
+                        <option value="technique">制作技巧</option>
+                        <option value="showcase">作品展示</option>
+                        <option value="question">求助问答</option>
+                        <option value="discussion">文化讨论</option>
+                        <option value="activity">活动相关</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="postContent">内容：</label>
+                    <textarea id="postContent" required rows="8" placeholder="分享你的想法、经验或问题..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="postImages">图片：</label>
+                    <input type="file" id="postImages" multiple accept="image/*" onchange="previewImages()">
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeNewPostModal()">取消</button>
+                    <button type="submit" class="btn-primary">发布帖子</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>绒花非遗传承平台</h3>
+                    <p>致力于传承和发扬中华传统绒花艺术</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="about.html">关于我们</a></li>
+                        <li><a href="contact.html">联系我们</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系方式</h4>
+                    <p>邮箱：info@ronghua-heritage.com</p>
+                    <p>电话：400-123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 绒花非遗传承平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/community.js"></script>
+</body>
+
+</html>

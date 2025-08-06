@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非遗百科 - 绒花非遗传承平台</title>
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/encyclopedia.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="绒花" class="logo">
+                <span class="brand-text">绒花非遗</span>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="nav-toggle" onclick="toggleMobileMenu()" aria-label="切换菜单" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu-wrapper">
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">首页</a></li>
+                    <li><a href="encyclopedia.html" class="nav-link active">非遗百科</a></li>
+                    <li><a href="tutorial.html" class="nav-link">视频教程</a></li>
+                    <li><a href="community.html" class="nav-link">社区论坛</a></li>
+                    <li><a href="shop.html" class="nav-link">文创商城</a></li>
+                    <li><a href="game.html" class="nav-link">趣味闯关</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+
+            <!-- 移动端遮罩层 -->
+            <div class="nav-overlay" onclick="closeMobileMenu()"></div>
+        </nav>
+    </header>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">非遗百科</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 页面标题 -->
+        <section class="page-header">
+            <div class="container">
+                <h1>绒花非遗百科</h1>
+                <p>深入了解绒花艺术的历史传承与精湛工艺</p>
+            </div>
+        </section>
+
+        <!-- 内容导航 -->
+        <section class="content-nav">
+            <div class="container">
+                <!-- 移动端下拉选择器 -->
+                <div class="mobile-tab-selector">
+                    <button class="mobile-tab-trigger" onclick="toggleTabDropdown()">
+                        <span class="current-tab-text">历史文化</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <ul class="mobile-tab-dropdown">
+                        <li><a href="#history" class="mobile-tab-link active" data-tab="history">历史文化</a></li>
+                        <li><a href="#craft" class="mobile-tab-link" data-tab="craft">工艺技法</a></li>
+                        <li><a href="#materials" class="mobile-tab-link" data-tab="materials">材料工具</a></li>
+                        <li><a href="#masters" class="mobile-tab-link" data-tab="masters">传承大师</a></li>
+                        <li><a href="#qa" class="mobile-tab-link" data-tab="qa">智能答疑</a></li>
+                    </ul>
+                </div>
+
+                <!-- 桌面端标签导航 -->
+                <ul class="nav-tabs">
+                    <li><a href="#history" class="tab-link active" data-tab="history">历史文化</a></li>
+                    <li><a href="#craft" class="tab-link" data-tab="craft">工艺技法</a></li>
+                    <li><a href="#materials" class="tab-link" data-tab="materials">材料工具</a></li>
+                    <li><a href="#masters" class="tab-link" data-tab="masters">传承大师</a></li>
+                    <li><a href="#qa" class="tab-link" data-tab="qa">智能答疑</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 历史文化模块 -->
+        <section id="history" class="content-section active">
+            <div class="container">
+                <div class="section-header">
+                    <h2>绒花历史文化</h2>
+                    <p>追溯千年绒花艺术的起源与发展历程</p>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>汉唐时期（公元前206年-907年）</h3>
+                            <p>绒花艺术起源于汉代，最初用于宫廷装饰。唐代时期工艺日趋精湛，成为贵族女性的重要头饰。</p>
+                            <div class="timeline-image">
+                                <img src="../assets/images/history1.jpg" alt="汉唐绒花">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>宋明时期（960年-1644年）</h3>
+                            <p>宋代绒花工艺进一步发展，明代时期技艺达到新的高度，形成了完整的制作体系。</p>
+                            <div class="timeline-image">
+                                <img src="../assets/images/history2.jpg" alt="宋明绒花">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>清代（1644年-1912年）</h3>
+                            <p>清代是绒花艺术的鼎盛时期，宫廷对绒花需求旺盛，民间工艺也得到极大发展。</p>
+                            <div class="timeline-image">
+                                <img src="../assets/images/history3.jpg" alt="清代绒花">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <h3>现代传承（1949年-至今）</h3>
+                            <p>新中国成立后，绒花艺术得到保护和传承，2006年被列入国家级非物质文化遗产名录。</p>
+                            <div class="timeline-image">
+                                <img src="../assets/images/history4.jpg" alt="现代绒花">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="culture-features">
+                    <h3>文化特色</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <div class="feature-icon">🌸</div>
+                            <h4>寓意吉祥</h4>
+                            <p>绒花寓意"荣华富贵"，常用于婚嫁等喜庆场合，象征美好生活。</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🎨</div>
+                            <h4>工艺精湛</h4>
+                            <p>制作工艺复杂精细，需要经过多道工序，体现了匠人的精湛技艺。</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🏛️</div>
+                            <h4>历史悠久</h4>
+                            <p>拥有两千多年的历史传承，是中华文化的重要组成部分。</p>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🌺</div>
+                            <h4>造型多样</h4>
+                            <p>花型丰富多彩，包括牡丹、菊花、梅花等各种传统花卉造型。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工艺技法模块 -->
+        <section id="craft" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>工艺技法</h2>
+                    <p>详解绒花制作的传统工艺与技法要点</p>
+                </div>
+
+                <div class="craft-process">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>选料准备</h3>
+                            <p>选择优质蚕丝，根据需要染色，准备各种工具材料。</p>
+                            <img src="../assets/images/craft1.jpg" alt="选料准备">
+                        </div>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>打毛整理</h3>
+                            <p>将蚕丝进行打毛处理，使其蓬松柔软，便于后续造型。</p>
+                            <img src="../assets/images/craft2.jpg" alt="打毛整理">
+                        </div>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>扎花成型</h3>
+                            <p>根据花型设计，将处理好的蚕丝扎制成各种花朵形状。</p>
+                            <img src="../assets/images/craft3.jpg" alt="扎花成型">
+                        </div>
+                    </div>
+
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>修整定型</h3>
+                            <p>对制作完成的绒花进行精细修整，确保造型完美。</p>
+                            <img src="../assets/images/craft4.jpg" alt="修整定型">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="technique-details">
+                    <h3>关键技法</h3>
+                    <div class="technique-grid">
+                        <div class="technique-item">
+                            <h4>打毛技法</h4>
+                            <p>使用特制工具将蚕丝打散，形成蓬松的绒毛状，是制作绒花的基础工艺。</p>
+                        </div>
+                        <div class="technique-item">
+                            <h4>扎制技法</h4>
+                            <p>运用特殊的扎制手法，将绒毛扎制成各种花型，需要丰富的经验和熟练的技巧。</p>
+                        </div>
+                        <div class="technique-item">
+                            <h4>造型技法</h4>
+                            <p>通过精巧的造型技法，使绒花呈现出自然生动的花朵形态。</p>
+                        </div>
+                        <div class="technique-item">
+                            <h4>染色技法</h4>
+                            <p>采用传统染色工艺，使绒花色彩鲜艳持久，层次丰富。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 材料工具模块 -->
+        <section id="materials" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>材料工具</h2>
+                    <p>了解制作绒花所需的传统材料与专用工具</p>
+                </div>
+
+                <div class="materials-tools">
+                    <div class="materials-section">
+                        <h3>主要材料</h3>
+                        <div class="items-grid">
+                            <div class="item">
+                                <img src="../assets/images/material1.jpg" alt="蚕丝">
+                                <h4>优质蚕丝</h4>
+                                <p>选用上等白蚕丝作为主要原料，质地柔软光滑。</p>
+                            </div>
+                            <div class="item">
+                                <img src="../assets/images/material2.jpg" alt="天然染料">
+                                <h4>天然染料</h4>
+                                <p>使用植物染料为蚕丝染色，色彩自然持久。</p>
+                            </div>
+                            <div class="item">
+                                <img src="../assets/images/material3.jpg" alt="细铜丝">
+                                <h4>细铜丝</h4>
+                                <p>用于制作花茎和固定花朵结构的重要材料。</p>
+                            </div>
+                            <div class="item">
+                                <img src="../assets/images/material4.jpg" alt="胶水">
+                                <h4>专用胶水</h4>
+                                <p>用于固定绒花结构，保证作品的持久性。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tools-section">
+                        <h3>专用工具</h3>
+                        <div class="items-grid">
+                            <div class="item">
+                                <img src="../assets/images/tool1.jpg" alt="打毛梳">
+                                <h4>打毛梳</h4>
+                                <p>专门用于将蚕丝打散成绒毛状的工具。</p>
+                            </div>
+                            <div class="item">
+                                <img src="../assets/images/tool2.jpg" alt="扎制钳">
+                                <h4>扎制钳</h4>
+                                <p>用于精确扎制绒花的专业工具。</p>
+                            </div>
+                            <div class="item">
+                                <img src="../assets/images/tool3.jpg" alt="修整剪">
+                                <h4>修整剪</h4>
+                                <p>用于修剪和整理绒花造型的精密剪刀。</p>
+                            </div>
+                            <div class="item">
+                                <img src="../assets/images/tool4.jpg" alt="造型板">
+                                <h4>造型板</h4>
+                                <p>辅助绒花造型的专用工作板。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 传承大师模块 -->
+        <section id="masters" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>传承大师</h2>
+                    <p>认识绒花艺术的传承大师与匠人风采</p>
+                </div>
+
+                <div class="masters-grid">
+                    <div class="master-card">
+                        <div class="master-photo">
+                            <img src="../assets/images/master1.jpg" alt="赵树宪">
+                        </div>
+                        <div class="master-info">
+                            <h3>赵树宪</h3>
+                            <p class="master-title">国家级非遗传承人</p>
+                            <p class="master-desc">南京绒花制作技艺的代表性传承人，从事绒花制作40余年，作品多次获得国家级奖项。</p>
+                            <div class="master-achievements">
+                                <span class="achievement">国家级传承人</span>
+                                <span class="achievement">工艺美术大师</span>
+                                <span class="achievement">非遗保护先进个人</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="master-card">
+                        <div class="master-photo">
+                            <img src="../assets/images/master2.jpg" alt="李月娥">
+                        </div>
+                        <div class="master-info">
+                            <h3>李月娥</h3>
+                            <p class="master-title">省级非遗传承人</p>
+                            <p class="master-desc">专注于传统绒花技艺的研究与传承，培养了众多优秀的绒花制作人才。</p>
+                            <div class="master-achievements">
+                                <span class="achievement">省级传承人</span>
+                                <span class="achievement">教育贡献奖</span>
+                                <span class="achievement">技艺传承奖</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="master-card">
+                        <div class="master-photo">
+                            <img src="../assets/images/master3.jpg" alt="王志新">
+                        </div>
+                        <div class="master-info">
+                            <h3>王志新</h3>
+                            <p class="master-title">市级非遗传承人</p>
+                            <p class="master-desc">在传统工艺基础上创新发展，将现代设计理念融入绒花制作中。</p>
+                            <div class="master-achievements">
+                                <span class="achievement">市级传承人</span>
+                                <span class="achievement">创新设计奖</span>
+                                <span class="achievement">青年工艺师</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 智能答疑模块 -->
+        <section id="qa" class="content-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>智能答疑</h2>
+                    <p>AI大模型为您解答绒花相关问题</p>
+                </div>
+
+                <div class="qa-interface">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message bot-message">
+                                <div class="message-avatar">
+                                    <img src="../assets/images/ai-avatar.png" alt="AI助手">
+                                </div>
+                                <div class="message-content">
+                                    <p>您好！我是绒花非遗智能助手，很高兴为您服务。您可以询问任何关于绒花历史、工艺、制作技法的问题，我会为您详细解答。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input">
+                            <div class="input-group">
+                                <input type="text" id="questionInput" placeholder="请输入您想了解的绒花相关问题..." maxlength="200">
+                                <button class="btn-send" onclick="sendQuestion()">发送</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-questions">
+                        <h4>常见问题</h4>
+                        <div class="questions-list">
+                            <button class="question-btn" onclick="askQuickQuestion('绒花的历史起源是什么？')">绒花的历史起源是什么？</button>
+                            <button class="question-btn" onclick="askQuickQuestion('制作绒花需要哪些材料？')">制作绒花需要哪些材料？</button>
+                            <button class="question-btn" onclick="askQuickQuestion('绒花有哪些传统花型？')">绒花有哪些传统花型？</button>
+                            <button class="question-btn" onclick="askQuickQuestion('如何保养绒花作品？')">如何保养绒花作品？</button>
+                            <button class="question-btn" onclick="askQuickQuestion('哪里可以学习绒花制作？')">哪里可以学习绒花制作？</button>
+                            <button class="question-btn" onclick="askQuickQuestion('绒花的文化寓意是什么？')">绒花的文化寓意是什么？</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>绒花非遗传承平台</h3>
+                    <p>致力于传承和发扬中华传统绒花艺术</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="about.html">关于我们</a></li>
+                        <li><a href="contact.html">联系我们</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系方式</h4>
+                    <p>邮箱：info@ronghua-heritage.com</p>
+                    <p>电话：400-123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 绒花非遗传承平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/encyclopedia.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,540 @@
+{% extends "admin/base.html" %}
+
+{% block title %}系统设置{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-gear"></i> 系统设置
+            </h1>
+            <button type="button" class="btn btn-primary" onclick="saveAllSettings()">
+                <i class="bi bi-check"></i> 保存所有设置
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 左侧设置菜单 -->
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">设置分类</h6>
+            </div>
+            <div class="list-group list-group-flush">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="tab" href="#basic-settings">
+                    <i class="bi bi-house me-2"></i>基本设置
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="tab" href="#upload-settings">
+                    <i class="bi bi-cloud-upload me-2"></i>上传设置
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="tab" href="#email-settings">
+                    <i class="bi bi-envelope me-2"></i>邮件设置
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="tab" href="#seo-settings">
+                    <i class="bi bi-search me-2"></i>SEO设置
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="tab" href="#security-settings">
+                    <i class="bi bi-shield-lock me-2"></i>安全设置
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="tab" href="#backup-settings">
+                    <i class="bi bi-archive me-2"></i>备份设置
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧设置内容 -->
+    <div class="col-md-9">
+        <div class="tab-content">
+            <!-- 基本设置 -->
+            <div class="tab-pane fade show active" id="basic-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-house"></i> 基本设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="basicSettingsForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="site_name" class="form-label">网站名称</label>
+                                        <input type="text" class="form-control" id="site_name"
+                                            value="{{ config.site_name or '绒花非遗传承平台' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="site_url" class="form-label">网站地址</label>
+                                        <input type="url" class="form-control" id="site_url"
+                                            value="http://localhost:8000">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="site_description" class="form-label">网站描述</label>
+                                <textarea class="form-control" id="site_description"
+                                    rows="3">{{ config.site_description or '传承中华非遗文化，弘扬绒花艺术' }}</textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="admin_email" class="form-label">管理员邮箱</label>
+                                        <input type="email" class="form-control" id="admin_email"
+                                            value="admin@ronghua.com">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="contact_phone" class="form-label">联系电话</label>
+                                        <input type="tel" class="form-control" id="contact_phone" value="400-888-8888">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="timezone" class="form-label">时区</label>
+                                        <select class="form-select" id="timezone">
+                                            <option value="Asia/Shanghai" selected>亚洲/上海 (UTC+8)</option>
+                                            <option value="UTC">协调世界时 (UTC)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="language" class="form-label">默认语言</label>
+                                        <select class="form-select" id="language">
+                                            <option value="zh-CN" selected>简体中文</option>
+                                            <option value="en">English</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 上传设置 -->
+            <div class="tab-pane fade" id="upload-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-cloud-upload"></i> 上传设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadSettingsForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="max_file_size" class="form-label">最大文件大小</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="max_file_size" value="5">
+                                            <span class="input-group-text">MB</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="allowed_extensions" class="form-label">允许的文件类型</label>
+                                        <input type="text" class="form-control" id="allowed_extensions"
+                                            value="jpg,jpeg,png,gif,pdf,doc,docx" placeholder="用逗号分隔">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="upload_path" class="form-label">上传目录</label>
+                                <input type="text" class="form-control" id="upload_path" value="./uploads/" readonly>
+                                <div class="form-text">文件上传的本地存储路径</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="auto_rename" checked>
+                                    <label class="form-check-label" for="auto_rename">
+                                        自动重命名文件（防止重名冲突）
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="generate_thumbnail" checked>
+                                    <label class="form-check-label" for="generate_thumbnail">
+                                        自动生成图片缩略图
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 邮件设置 -->
+            <div class="tab-pane fade" id="email-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-envelope"></i> 邮件设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="emailSettingsForm">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="email_enabled" {{ 'checked' if
+                                        config.email_enabled else '' }}>
+                                    <label class="form-check-label" for="email_enabled">
+                                        启用邮件功能
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="emailConfig" style="display: {{ 'block' if config.email_enabled else 'none' }};">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="smtp_host" class="form-label">SMTP服务器</label>
+                                            <input type="text" class="form-control" id="smtp_host"
+                                                placeholder="smtp.example.com">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="smtp_port" class="form-label">SMTP端口</label>
+                                            <input type="number" class="form-control" id="smtp_port" value="587"
+                                                placeholder="587">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="smtp_username" class="form-label">SMTP用户名</label>
+                                            <input type="text" class="form-control" id="smtp_username">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="smtp_password" class="form-label">SMTP密码</label>
+                                            <input type="password" class="form-control" id="smtp_password">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="from_email" class="form-label">发件人邮箱</label>
+                                    <input type="email" class="form-control" id="from_email"
+                                        value="noreply@ronghua.com">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="from_name" class="form-label">发件人姓名</label>
+                                    <input type="text" class="form-control" id="from_name" value="绒花非遗传承平台">
+                                </div>
+
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-outline-primary" onclick="testEmail()">
+                                        <i class="bi bi-send"></i> 发送测试邮件
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO设置 -->
+            <div class="tab-pane fade" id="seo-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-search"></i> SEO设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="seoSettingsForm">
+                            <div class="mb-3">
+                                <label for="meta_keywords" class="form-label">网站关键词</label>
+                                <input type="text" class="form-control" id="meta_keywords" value="绒花,非遗,传统文化,手工艺,文化传承"
+                                    placeholder="用逗号分隔多个关键词">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="meta_description" class="form-label">网站描述</label>
+                                <textarea class="form-control" id="meta_description" rows="3"
+                                    placeholder="用于搜索引擎显示的网站描述">传承千年绒花艺术，弘扬中华非遗文化。提供绒花制作教程、作品展示、交流社区等功能。</textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="google_analytics" class="form-label">Google Analytics ID</label>
+                                        <input type="text" class="form-control" id="google_analytics"
+                                            placeholder="UA-XXXXXXXXX-X">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="baidu_tongji" class="form-label">百度统计代码</label>
+                                        <input type="text" class="form-control" id="baidu_tongji" placeholder="统计代码ID">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="auto_sitemap" checked>
+                                    <label class="form-check-label" for="auto_sitemap">
+                                        自动生成网站地图 (sitemap.xml)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="robots_txt" checked>
+                                    <label class="form-check-label" for="robots_txt">
+                                        生成 robots.txt 文件
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 安全设置 -->
+            <div class="tab-pane fade" id="security-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-shield-lock"></i> 安全设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="securitySettingsForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="session_timeout" class="form-label">会话超时时间</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="session_timeout" value="7200">
+                                            <span class="input-group-text">秒</span>
+                                        </div>
+                                        <div class="form-text">用户无操作后自动退出的时间</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="max_login_attempts" class="form-label">最大登录尝试次数</label>
+                                        <input type="number" class="form-control" id="max_login_attempts" value="5">
+                                        <div class="form-text">超过次数将临时锁定账户</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="force_https" checked>
+                                    <label class="form-check-label" for="force_https">
+                                        强制使用 HTTPS
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="enable_2fa">
+                                    <label class="form-check-label" for="enable_2fa">
+                                        启用双因素认证 (2FA)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="log_failed_logins" checked>
+                                    <label class="form-check-label" for="log_failed_logins">
+                                        记录登录失败日志
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="allowed_ips" class="form-label">管理员IP白名单</label>
+                                <textarea class="form-control" id="allowed_ips" rows="3" placeholder="每行一个IP地址，留空表示不限制">127.0.0.1
+localhost</textarea>
+                                <div class="form-text">仅允许这些IP访问管理后台</div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 备份设置 -->
+            <div class="tab-pane fade" id="backup-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-archive"></i> 备份设置
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="backupSettingsForm">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="auto_backup" checked>
+                                    <label class="form-check-label" for="auto_backup">
+                                        启用自动备份
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="backupConfig">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="backup_frequency" class="form-label">备份频率</label>
+                                            <select class="form-select" id="backup_frequency">
+                                                <option value="daily" selected>每日</option>
+                                                <option value="weekly">每周</option>
+                                                <option value="monthly">每月</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="backup_time" class="form-label">备份时间</label>
+                                            <input type="time" class="form-control" id="backup_time" value="02:00">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="backup_path" class="form-label">备份存储路径</label>
+                                            <input type="text" class="form-control" id="backup_path" value="./backups/"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="backup_retention" class="form-label">保留天数</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="backup_retention"
+                                                    value="30">
+                                                <span class="input-group-text">天</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <h6>手动备份</h6>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary" onclick="backupDatabase()">
+                                        <i class="bi bi-database"></i> 备份数据库
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" onclick="backupFiles()">
+                                        <i class="bi bi-files"></i> 备份文件
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info" onclick="fullBackup()">
+                                        <i class="bi bi-archive"></i> 完整备份
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6>恢复备份</h6>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="restore_file" accept=".zip,.sql">
+                                    <button class="btn btn-outline-warning" type="button" onclick="restoreBackup()">
+                                        <i class="bi bi-upload"></i> 恢复
+                                    </button>
+                                </div>
+                                <div class="form-text text-danger">
+                                    <i class="bi bi-exclamation-triangle"></i> 恢复操作会覆盖现有数据，请谨慎操作！
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 邮件设置相关
+    document.getElementById('email_enabled').addEventListener('change', function () {
+        const config = document.getElementById('emailConfig');
+        config.style.display = this.checked ? 'block' : 'none';
+    });
+
+    // 备份设置相关
+    document.getElementById('auto_backup').addEventListener('change', function () {
+        const config = document.getElementById('backupConfig');
+        config.style.display = this.checked ? 'block' : 'none';
+    });
+
+    // 保存所有设置
+    function saveAllSettings() {
+        if (confirm('确定要保存所有设置吗？')) {
+            // TODO: 实现设置保存功能
+            alert('设置保存功能待实现');
+        }
+    }
+
+    // 测试邮件
+    function testEmail() {
+        alert('测试邮件发送功能待实现');
+    }
+
+    // 备份相关函数
+    function backupDatabase() {
+        if (confirm('确定要备份数据库吗？')) {
+            alert('数据库备份功能待实现');
+        }
+    }
+
+    function backupFiles() {
+        if (confirm('确定要备份文件吗？')) {
+            alert('文件备份功能待实现');
+        }
+    }
+
+    function fullBackup() {
+        if (confirm('确定要进行完整备份吗？')) {
+            alert('完整备份功能待实现');
+        }
+    }
+
+    function restoreBackup() {
+        const fileInput = document.getElementById('restore_file');
+        if (!fileInput.files.length) {
+            alert('请选择要恢复的备份文件');
+            return;
+        }
+
+        if (confirm('确定要恢复备份吗？此操作不可逆！')) {
+            alert('备份恢复功能待实现');
+        }
+    }
+</script>
+{% endblock %}

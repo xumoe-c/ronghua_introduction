@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绒花非遗传承平台</title>
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="assets/images/logo.svg" alt="绒花" class="logo">
+                <span class="brand-text">绒花非遗</span>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="nav-toggle" onclick="toggleMobileMenu()" aria-label="切换菜单" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu-wrapper">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link active">首页</a></li>
+                    <li><a href="pages/encyclopedia.html" class="nav-link">非遗百科</a></li>
+                    <li><a href="pages/tutorial.html" class="nav-link">视频教程</a></li>
+                    <li><a href="pages/community.html" class="nav-link">社区论坛</a></li>
+                    <li><a href="pages/shop.html" class="nav-link">文创商城</a></li>
+                    <li><a href="pages/game.html" class="nav-link">趣味闯关</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+
+            <!-- 移动端遮罩层 -->
+            <div class="nav-overlay" onclick="closeMobileMenu()"></div>
+        </nav>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 轮播横幅 -->
+        <section class="hero-banner">
+            <div class="banner-container">
+                <div class="banner-slide active">
+                    <img src="assets/images/banner1.jpg" alt="绒花艺术">
+                    <div class="banner-content">
+                        <h1>传承千年绒花艺术</h1>
+                        <p>探索中华非物质文化遗产的精髓与魅力</p>
+                        <button class="btn-primary" onclick="scrollToSection('encyclopedia')">开始探索</button>
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/images/banner2.jpg" alt="手工制作">
+                    <div class="banner-content">
+                        <h1>跟随大师学习绒花制作</h1>
+                        <p>专业视频教程，循序渐进掌握传统技艺</p>
+                        <button class="btn-primary" onclick="scrollToSection('tutorial')">观看教程</button>
+                    </div>
+                </div>
+                <div class="banner-slide">
+                    <img src="assets/images/banner3.jpg" alt="社区交流">
+                    <div class="banner-content">
+                        <h1>加入绒花爱好者社区</h1>
+                        <p>与同好交流心得，分享创作成果</p>
+                        <button class="btn-primary" onclick="scrollToSection('community')">立即加入</button>
+                    </div>
+                </div>
+            </div>
+            <div class="banner-nav">
+                <span class="banner-dot active" onclick="showSlide(0)"></span>
+                <span class="banner-dot" onclick="showSlide(1)"></span>
+                <span class="banner-dot" onclick="showSlide(2)"></span>
+            </div>
+        </section>
+
+        <!-- 特色功能展示 -->
+        <section class="features" id="home">
+            <div class="container">
+                <h2 class="section-title">平台特色</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="assets/images/icon-encyclopedia.svg" alt="百科">
+                        </div>
+                        <h3>非遗百科</h3>
+                        <p>系统梳理绒花历史文化，智能答疑解惑</p>
+                        <a href="pages/encyclopedia.html" class="feature-link">了解更多</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="assets/images/icon-tutorial.svg" alt="教程">
+                        </div>
+                        <h3>视频教程</h3>
+                        <p>分步骤教学视频，直播工坊实时指导</p>
+                        <a href="pages/tutorial.html" class="feature-link">开始学习</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="assets/images/icon-community.svg" alt="社区">
+                        </div>
+                        <h3>社区论坛</h3>
+                        <p>交流创作心得，分享制作视频</p>
+                        <a href="pages/community.html" class="feature-link">立即参与</a>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <img src="assets/images/icon-shop.svg" alt="商城">
+                        </div>
+                        <h3>文创商城</h3>
+                        <p>数字藏品收藏，定制化服务体验</p>
+                        <a href="pages/shop.html" class="feature-link">探索商城</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 最新动态 -->
+        <section class="news">
+            <div class="container">
+                <h2 class="section-title">最新动态</h2>
+                <div class="news-grid">
+                    <article class="news-item">
+                        <img src="assets/images/news1.jpg" alt="新闻1">
+                        <div class="news-content">
+                            <h3>绒花艺术展在京开幕</h3>
+                            <p>汇集全国绒花精品，展示传统工艺魅力...</p>
+                            <time>2025-08-01</time>
+                        </div>
+                    </article>
+                    <article class="news-item">
+                        <img src="assets/images/news2.jpg" alt="新闻2">
+                        <div class="news-content">
+                            <h3>大师工坊直播课程上线</h3>
+                            <p>国家级非遗传承人亲自授课，限时免费...</p>
+                            <time>2025-07-28</time>
+                        </div>
+                    </article>
+                    <article class="news-item">
+                        <img src="assets/images/news3.jpg" alt="新闻3">
+                        <div class="news-content">
+                            <h3>AI绒花纹样生成功能发布</h3>
+                            <p>输入关键词即可生成个性化绒花纹样...</p>
+                            <time>2025-07-25</time>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>绒花非遗传承平台</h3>
+                    <p>致力于传承和发扬中华传统绒花艺术</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="pages/about.html">关于我们</a></li>
+                        <li><a href="pages/contact.html">联系我们</a></li>
+                        <li><a href="pages/privacy.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系方式</h4>
+                    <p>邮箱：info@ronghua-heritage.com</p>
+                    <p>电话：400-123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 绒花非遗传承平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>用户登录</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginPhone">手机号：</label>
+                    <input type="tel" id="loginPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码：</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">登录</button>
+                <p class="form-tip">没有账号？<a href="#" onclick="switchToRegister()">立即注册</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>用户注册</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerPhone">手机号：</label>
+                    <input type="tel" id="registerPhone" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerCode">验证码：</label>
+                    <input type="text" id="registerCode" required>
+                    <button type="button" class="btn-code">获取验证码</button>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">密码：</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirm">确认密码：</label>
+                    <input type="password" id="registerConfirm" required>
+                </div>
+                <button type="submit" class="btn-primary">注册</button>
+                <p class="form-tip">已有账号？<a href="#" onclick="switchToLogin()">立即登录</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/common.js"></script>
+    <script src="assets/js/index.js"></script>
+</body>
+
+</html>

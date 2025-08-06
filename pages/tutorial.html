@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频教程 - 绒花非遗传承平台</title>
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/tutorial.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="绒花" class="logo">
+                <span class="brand-text">绒花非遗</span>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="nav-toggle" onclick="toggleMobileMenu()" aria-label="切换菜单" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu-wrapper">
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">首页</a></li>
+                    <li><a href="encyclopedia.html" class="nav-link">非遗百科</a></li>
+                    <li><a href="tutorial.html" class="nav-link active">视频教程</a></li>
+                    <li><a href="community.html" class="nav-link">社区论坛</a></li>
+                    <li><a href="shop.html" class="nav-link">文创商城</a></li>
+                    <li><a href="game.html" class="nav-link">趣味闯关</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+
+            <!-- 移动端遮罩层 -->
+            <div class="nav-overlay" onclick="closeMobileMenu()"></div>
+        </nav>
+    </header>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">视频教程</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 页面标题 -->
+        <section class="page-header">
+            <div class="container">
+                <h1>绒花制作教程</h1>
+                <p>跟随传承大师，从零开始学习绒花制作技艺</p>
+            </div>
+        </section>
+
+        <!-- 筛选和搜索 -->
+        <section class="filters">
+            <div class="container">
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>难度等级：</label>
+                        <select id="difficultyFilter" onchange="filterVideos()">
+                            <option value="">全部</option>
+                            <option value="beginner">入门</option>
+                            <option value="intermediate">进阶</option>
+                            <option value="advanced">高级</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>视频类型：</label>
+                        <select id="typeFilter" onchange="filterVideos()">
+                            <option value="">全部</option>
+                            <option value="basic">基础技法</option>
+                            <option value="advanced">进阶技法</option>
+                            <option value="masterclass">大师课程</option>
+                            <option value="live">直播回放</option>
+                        </select>
+                    </div>
+
+                    <div class="search-group">
+                        <input type="text" id="searchInput" placeholder="搜索教程..." onkeyup="searchVideos()">
+                        <button class="btn-search" onclick="searchVideos()">🔍</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 视频教程列表 -->
+        <section class="tutorials">
+            <div class="container">
+                <!-- 基础入门系列 -->
+                <div class="tutorial-category">
+                    <h2 class="category-title">基础入门系列</h2>
+                    <div class="tutorial-grid" id="beginnerTutorials">
+                        <div class="tutorial-card" data-difficulty="beginner" data-type="basic">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/tutorial1.jpg" alt="绒花材料认识" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">08:32</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>第一课：绒花材料认识</h3>
+                                <p class="instructor">讲师：赵树宪大师</p>
+                                <p class="description">了解制作绒花所需的基本材料：蚕丝、铜丝、染料等</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty beginner">入门</span>
+                                    <span class="views">1.2万观看</span>
+                                    <span class="rating">⭐ 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-card" data-difficulty="beginner" data-type="basic">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/tutorial2.jpg" alt="基础工具使用" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">12:15</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>第二课：基础工具使用</h3>
+                                <p class="instructor">讲师：李月娥大师</p>
+                                <p class="description">学习使用打毛梳、扎制钳、修整剪等基本工具</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty beginner">入门</span>
+                                    <span class="views">9.8k观看</span>
+                                    <span class="rating">⭐ 4.9</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-card" data-difficulty="beginner" data-type="basic">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/tutorial3.jpg" alt="打毛技法" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">15:20</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>第三课：打毛技法详解</h3>
+                                <p class="instructor">讲师：王志新大师</p>
+                                <p class="description">掌握绒花制作的第一步：如何正确打毛和整理蚕丝</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty beginner">入门</span>
+                                    <span class="views">8.5k观看</span>
+                                    <span class="rating">⭐ 4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 进阶技法系列 -->
+                <div class="tutorial-category">
+                    <h2 class="category-title">进阶技法系列</h2>
+                    <div class="tutorial-grid" id="intermediateTutorials">
+                        <div class="tutorial-card" data-difficulty="intermediate" data-type="advanced">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/tutorial4.jpg" alt="花瓣制作" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">18:45</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>花瓣制作与造型</h3>
+                                <p class="instructor">讲师：赵树宪大师</p>
+                                <p class="description">学习制作各种花瓣形状，掌握造型技巧</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty intermediate">进阶</span>
+                                    <span class="views">6.3k观看</span>
+                                    <span class="rating">⭐ 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-card" data-difficulty="intermediate" data-type="advanced">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/tutorial5.jpg" alt="花蕊制作" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">22:10</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>花蕊制作技巧</h3>
+                                <p class="instructor">讲师：李月娥大师</p>
+                                <p class="description">细致讲解花蕊的制作方法和注意事项</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty intermediate">进阶</span>
+                                    <span class="views">5.2k观看</span>
+                                    <span class="rating">⭐ 4.9</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tutorial-card" data-difficulty="intermediate" data-type="advanced">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/tutorial6.jpg" alt="组装成花" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">25:30</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>组装成花技法</h3>
+                                <p class="instructor">讲师：王志新大师</p>
+                                <p class="description">将花瓣、花蕊组装成完整的绒花作品</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty intermediate">进阶</span>
+                                    <span class="views">7.1k观看</span>
+                                    <span class="rating">⭐ 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 大师课程 -->
+                <div class="tutorial-category">
+                    <h2 class="category-title">大师课程</h2>
+                    <div class="tutorial-grid" id="masterclassTutorials">
+                        <div class="tutorial-card featured" data-difficulty="advanced" data-type="masterclass">
+                            <div class="video-thumbnail">
+                                <img src="../assets/images/masterclass1.jpg" alt="传统宫花制作" loading="lazy">
+                                <div class="play-button">▶</div>
+                                <div class="video-duration">45:20</div>
+                                <div class="premium-badge">精品</div>
+                            </div>
+                            <div class="tutorial-info">
+                                <h3>传统宫花完整制作</h3>
+                                <p class="instructor">讲师：赵树宪大师</p>
+                                <p class="description">国家级传承人亲授，完整制作一朵传统宫花</p>
+                                <div class="tutorial-meta">
+                                    <span class="difficulty advanced">高级</span>
+                                    <span class="views">3.8k观看</span>
+                                    <span class="rating">⭐ 5.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 直播课程预告 -->
+                <div class="live-schedule">
+                    <h2 class="category-title">直播课程预告</h2>
+                    <div class="live-card">
+                        <div class="live-info">
+                            <h3>🔴 春花主题创作直播课</h3>
+                            <p class="live-time">直播时间：每周六 14:00-16:00</p>
+                            <p class="live-teacher">主讲：李月娥大师</p>
+                            <p class="live-desc">结合春季花卉特点，现场演示春花系列绒花制作</p>
+                            <button class="btn-primary" onclick="subscribeLive()">预约直播</button>
+                        </div>
+                        <div class="live-thumbnail">
+                            <img src="../assets/images/live-preview.jpg" alt="直播预告">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>绒花非遗传承平台</h3>
+                    <p>致力于传承和发扬中华传统绒花艺术</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="about.html">关于我们</a></li>
+                        <li><a href="contact.html">联系我们</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系方式</h4>
+                    <p>邮箱：info@ronghua-heritage.com</p>
+                    <p>电话：400-123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 绒花非遗传承平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/tutorial.js"></script>
+</body>
+
+</html>

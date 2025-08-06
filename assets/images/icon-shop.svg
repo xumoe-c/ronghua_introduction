@@ -1,0 +1,22 @@
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shopGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b4513;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- 背景圆 -->
+  <circle cx="30" cy="30" r="28" fill="url(#shopGradient)" stroke="#fff" stroke-width="2"/>
+  <!-- 购物袋图标 -->
+  <g fill="#fff">
+    <!-- 购物袋主体 -->
+    <path d="M20,25 L40,25 L38,42 Q38,44 36,44 L24,44 Q22,44 22,42 L20,25 Z" fill="#fff" stroke="#8b4513" stroke-width="1"/>
+    <!-- 购物袋手柄 -->
+    <path d="M25,25 L25,20 Q25,18 27,18 L33,18 Q35,18 35,20 L35,25" fill="none" stroke="#8b4513" stroke-width="2"/>
+    <!-- 装饰花纹 -->
+    <circle cx="30" cy="33" r="3" fill="none" stroke="#8b4513" stroke-width="1"/>
+    <path d="M28,31 L32,35 M32,31 L28,35" stroke="#8b4513" stroke-width="1"/>
+  </g>
+  <!-- 标题 -->
+  <text x="30" y="50" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#8b4513" font-weight="bold">商城</text>
+</svg>

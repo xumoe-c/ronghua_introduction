@@ -1,0 +1,219 @@
+{% extends "admin/base.html" %}
+
+{% block title %}仪表板{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">
+            <i class="bi bi-speedometer2"></i> 仪表板
+        </h1>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.users or 0 }}</div>
+                        <div>注册用户</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.content or 0 }}</div>
+                        <div>内容条目</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-file-text fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.community or 0 }}</div>
+                        <div>社区帖子</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-chat-dots fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-info text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.orders or 0 }}</div>
+                        <div>订单数量</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-cart3 fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 图表区域 -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-bar-chart"></i> 用户注册趋势
+            </div>
+            <div class="card-body">
+                <canvas id="userChart" width="100%" height="40"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-pie-chart"></i> 内容分类统计
+            </div>
+            <div class="card-body">
+                <canvas id="contentChart" width="100%" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最近活动 -->
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> 最近用户注册
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for user in recent_users or [] %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ user.username }}</div>
+                            <small class="text-muted">{{ user.email }}</small>
+                        </div>
+                        <small class="text-muted">{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else
+                            '' }}</small>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-3">暂无数据</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-activity"></i> 最新社区动态
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for post in recent_posts or [] %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}
+                            </div>
+                            <small class="text-muted">by {{ post.author.username if post.author else 'Unknown'
+                                }}</small>
+                        </div>
+                        <small class="text-muted">{{ post.created_at.strftime('%Y-%m-%d %H:%M') if post.created_at else
+                            '' }}</small>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-3">暂无数据</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js 脚本 -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 用户注册趋势图
+        const userCtx = document.getElementById('userChart').getContext('2d');
+        new Chart(userCtx, {
+            type: 'line',
+            data: {
+                labels: {{ chart_data.user_labels | tojson if chart_data else '[]' | safe }},
+        datasets: [{
+            label: '新增用户',
+            data: {{ chart_data.user_data | tojson if chart_data else '[]' | safe }},
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.1
+            }]
+        },
+        options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
+
+    // 内容分类统计
+    const contentCtx = document.getElementById('contentChart').getContext('2d');
+    new Chart(contentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ chart_data.content_labels | tojson if chart_data else '["暂无数据"]' | safe }},
+        datasets: [{
+            data: {{ chart_data.content_data | tojson if chart_data else '[1]' | safe }},
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(255, 205, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(153, 102, 255, 0.8)'
+        ]
+            }]
+        },
+        options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            }
+        }
+    }
+    });
+});
+</script>
+{% endblock %}

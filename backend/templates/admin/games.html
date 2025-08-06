@@ -1,0 +1,560 @@
+{% extends "admin/base.html" %}
+
+{% block title %}游戏管理{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-controller"></i> 游戏管理
+            </h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#gameModal">
+                <i class="bi bi-plus"></i> 添加游戏
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">总游戏数</h5>
+                        <h2 class="mb-0">{{ game_stats.total_games or 15 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-controller fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">启用游戏</h5>
+                        <h2 class="mb-0">{{ game_stats.active_games or 12 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">游戏记录</h5>
+                        <h2 class="mb-0">{{ game_stats.game_records or 3268 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-trophy fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">活跃玩家</h5>
+                        <h2 class="mb-0">{{ game_stats.active_players or 486 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 游戏管理标签页 -->
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="gameTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="games-tab" data-bs-toggle="tab" data-bs-target="#games"
+                    type="button" role="tab">
+                    <i class="bi bi-list"></i> 游戏列表
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="records-tab" data-bs-toggle="tab" data-bs-target="#records" type="button"
+                    role="tab">
+                    <i class="bi bi-clipboard-data"></i> 游戏记录
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#leaderboard"
+                    type="button" role="tab">
+                    <i class="bi bi-trophy"></i> 排行榜
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="gameTabsContent">
+            <!-- 游戏列表 -->
+            <div class="tab-pane fade show active" id="games" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="gameSearch" placeholder="搜索游戏名称...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="gameStatus">
+                            <option value="">所有状态</option>
+                            <option value="active">启用</option>
+                            <option value="disabled">禁用</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="gameType">
+                            <option value="">所有类型</option>
+                            <option value="puzzle">益智类</option>
+                            <option value="memory">记忆类</option>
+                            <option value="action">动作类</option>
+                            <option value="quiz">问答类</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>游戏名称</th>
+                                <th>类型</th>
+                                <th>难度</th>
+                                <th>游戏次数</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gamesTable">
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/games/puzzle1.png" class="rounded me-2" width="32"
+                                            height="32" alt="拼图游戏">
+                                        <span>绒花拼图</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary">益智类</span></td>
+                                <td>
+                                    <div class="progress" style="width: 60px;">
+                                        <div class="progress-bar bg-success" style="width: 60%"></div>
+                                    </div>
+                                    <small>简单</small>
+                                </td>
+                                <td>1,234</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>2024-01-15</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editGame(1)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteGame(1)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/games/memory1.png" class="rounded me-2" width="32"
+                                            height="32" alt="记忆游戏">
+                                        <span>记忆匹配</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info">记忆类</span></td>
+                                <td>
+                                    <div class="progress" style="width: 60px;">
+                                        <div class="progress-bar bg-warning" style="width: 80%"></div>
+                                    </div>
+                                    <small>中等</small>
+                                </td>
+                                <td>856</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>2024-01-18</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editGame(2)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteGame(2)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/games/quiz1.png" class="rounded me-2" width="32"
+                                            height="32" alt="问答游戏">
+                                        <span>绒花知识问答</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning">问答类</span></td>
+                                <td>
+                                    <div class="progress" style="width: 60px;">
+                                        <div class="progress-bar bg-danger" style="width: 100%"></div>
+                                    </div>
+                                    <small>困难</small>
+                                </td>
+                                <td>654</td>
+                                <td><span class="badge bg-secondary">禁用</span></td>
+                                <td>2024-01-20</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editGame(3)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteGame(3)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 游戏记录 -->
+            <div class="tab-pane fade" id="records" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="搜索玩家...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option value="">所有游戏</option>
+                            <option value="1">绒花拼图</option>
+                            <option value="2">记忆匹配</option>
+                            <option value="3">绒花知识问答</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-download"></i> 导出
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>记录ID</th>
+                                <th>玩家</th>
+                                <th>游戏</th>
+                                <th>得分</th>
+                                <th>用时</th>
+                                <th>游戏时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#10001</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="24"
+                                            height="24">
+                                        <span>张三</span>
+                                    </div>
+                                </td>
+                                <td>绒花拼图</td>
+                                <td><span class="badge bg-success">98分</span></td>
+                                <td>2分35秒</td>
+                                <td>2024-02-01 14:30</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" onclick="viewRecord(10001)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(10001)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#10002</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="24"
+                                            height="24">
+                                        <span>李四</span>
+                                    </div>
+                                </td>
+                                <td>记忆匹配</td>
+                                <td><span class="badge bg-warning">85分</span></td>
+                                <td>4分12秒</td>
+                                <td>2024-02-01 13:45</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" onclick="viewRecord(10002)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteRecord(10002)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 排行榜 -->
+            <div class="tab-pane fade" id="leaderboard" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">本月游戏达人</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-warning rounded-pill me-2">1</span>
+                                            <img src="/static/img/default-avatar.png" class="rounded-circle me-2"
+                                                width="32" height="32">
+                                            <span>张三</span>
+                                        </div>
+                                        <span class="badge bg-primary">15,680分</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-secondary rounded-pill me-2">2</span>
+                                            <img src="/static/img/default-avatar.png" class="rounded-circle me-2"
+                                                width="32" height="32">
+                                            <span>李四</span>
+                                        </div>
+                                        <span class="badge bg-primary">12,450分</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge bg-warning rounded-pill me-2">3</span>
+                                            <img src="/static/img/default-avatar.png" class="rounded-circle me-2"
+                                                width="32" height="32">
+                                            <span>王五</span>
+                                        </div>
+                                        <span class="badge bg-primary">9,870分</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">热门游戏</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/static/img/games/puzzle1.png" class="rounded me-2" width="32"
+                                                height="32">
+                                            <span>绒花拼图</span>
+                                        </div>
+                                        <span class="badge bg-success">1,234次</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/static/img/games/memory1.png" class="rounded me-2" width="32"
+                                                height="32">
+                                            <span>记忆匹配</span>
+                                        </div>
+                                        <span class="badge bg-success">856次</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="/static/img/games/quiz1.png" class="rounded me-2" width="32"
+                                                height="32">
+                                            <span>绒花知识问答</span>
+                                        </div>
+                                        <span class="badge bg-success">654次</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 游戏添加/编辑模态框 -->
+<div class="modal fade" id="gameModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加游戏</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="gameForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gameName" class="form-label">游戏名称</label>
+                                <input type="text" class="form-control" id="gameName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gameType" class="form-label">游戏类型</label>
+                                <select class="form-select" id="gameType" required>
+                                    <option value="">选择类型</option>
+                                    <option value="puzzle">益智类</option>
+                                    <option value="memory">记忆类</option>
+                                    <option value="action">动作类</option>
+                                    <option value="quiz">问答类</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gameDifficulty" class="form-label">难度等级</label>
+                                <select class="form-select" id="gameDifficulty" required>
+                                    <option value="">选择难度</option>
+                                    <option value="easy">简单</option>
+                                    <option value="medium">中等</option>
+                                    <option value="hard">困难</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gameStatus" class="form-label">状态</label>
+                                <select class="form-select" id="gameStatus" required>
+                                    <option value="active">启用</option>
+                                    <option value="disabled">禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="gameDescription" class="form-label">游戏描述</label>
+                        <textarea class="form-control" id="gameDescription" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="gameRules" class="form-label">游戏规则</label>
+                        <textarea class="form-control" id="gameRules" rows="4"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gameImage" class="form-label">游戏图标</label>
+                                <input type="file" class="form-control" id="gameImage" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="gameFile" class="form-label">游戏文件</label>
+                                <input type="file" class="form-control" id="gameFile" accept=".html,.js,.zip">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="maxScore" class="form-label">最高得分</label>
+                                <input type="number" class="form-control" id="maxScore" value="100">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="timeLimit" class="form-label">时间限制(秒)</label>
+                                <input type="number" class="form-control" id="timeLimit" value="0" placeholder="0表示无限制">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="sortOrder" class="form-label">排序顺序</label>
+                                <input type="number" class="form-control" id="sortOrder" value="1">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveGame()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 编辑游戏
+    function editGame(id) {
+        // TODO: 获取游戏数据并填充表单
+        document.querySelector('#gameModal .modal-title').textContent = '编辑游戏';
+        new bootstrap.Modal(document.getElementById('gameModal')).show();
+    }
+
+    // 删除游戏
+    function deleteGame(id) {
+        if (confirm('确定要删除这个游戏吗？')) {
+            // TODO: 实现删除功能
+            alert('删除功能待实现');
+        }
+    }
+
+    // 保存游戏
+    function saveGame() {
+        const form = document.getElementById('gameForm');
+        if (form.checkValidity()) {
+            // TODO: 实现保存功能
+            alert('保存功能待实现');
+            bootstrap.Modal.getInstance(document.getElementById('gameModal')).hide();
+        } else {
+            form.reportValidity();
+        }
+    }
+
+    // 查看游戏记录
+    function viewRecord(id) {
+        alert('查看记录功能待实现');
+    }
+
+    // 删除游戏记录
+    function deleteRecord(id) {
+        if (confirm('确定要删除这条游戏记录吗？')) {
+            alert('删除记录功能待实现');
+        }
+    }
+</script>
+{% endblock %}

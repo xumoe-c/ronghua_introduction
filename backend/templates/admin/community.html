@@ -1,0 +1,1322 @@
+{% extends "admin/base.html" %}
+
+{% block title %}社区管理{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-people"></i> 社区管理
+            </h1>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                    data-bs-target="#announcementModal">
+                    <i class="bi bi-megaphone"></i> 发布公告
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postModal">
+                    <i class="bi bi-plus"></i> 创建帖子
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">总帖子数</h5>
+                        <h2 class="mb-0">{{ community_stats.total_posts or 1256 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-chat-left-text fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">评论数量</h5>
+                        <h2 class="mb-0">{{ community_stats.total_comments or 4892 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-chat-dots fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">今日新帖</h5>
+                        <h2 class="mb-0">{{ community_stats.today_posts or 15 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-plus-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">待审核</h5>
+                        <h2 class="mb-0">{{ community_stats.pending_posts or 8 }}</h2>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 社区管理标签页 -->
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="communityTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts"
+                    type="button" role="tab">
+                    <i class="bi bi-list"></i> 帖子管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button"
+                    role="tab">
+                    <i class="bi bi-chat-dots"></i> 评论管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="categories-tab" data-bs-toggle="tab" data-bs-target="#categories"
+                    type="button" role="tab">
+                    <i class="bi bi-tags"></i> 分类管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reports-tab" data-bs-toggle="tab" data-bs-target="#reports" type="button"
+                    role="tab">
+                    <i class="bi bi-flag"></i> 举报管理
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="communityTabsContent">
+            <!-- 帖子管理 -->
+            <div class="tab-pane fade show active" id="posts" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="postSearch" placeholder="搜索帖子标题或内容...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="postStatus">
+                            <option value="">所有状态</option>
+                            <option value="published">已发布</option>
+                            <option value="pending">待审核</option>
+                            <option value="rejected">已拒绝</option>
+                            <option value="hidden">已隐藏</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="postCategory">
+                            <option value="">所有分类</option>
+                            <option value="tutorial">教程分享</option>
+                            <option value="showcase">作品展示</option>
+                            <option value="discussion">讨论交流</option>
+                            <option value="question">问题求助</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="postDate">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-success w-100" onclick="exportPosts()">
+                            <i class="bi bi-download"></i> 导出
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
+                                </th>
+                                <th>ID</th>
+                                <th>标题</th>
+                                <th>作者</th>
+                                <th>分类</th>
+                                <th>阅读量</th>
+                                <th>评论数</th>
+                                <th>状态</th>
+                                <th>发布时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="postsTable">
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input post-checkbox" value="1"></td>
+                                <td>1001</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/post-thumbnails/1.jpg" class="rounded me-2" width="40"
+                                            height="30" alt="缩略图">
+                                        <div>
+                                            <div class="fw-bold">初学者绒花制作指南</div>
+                                            <small class="text-muted">详细介绍绒花制作的基本步骤...</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="24"
+                                            height="24">
+                                        <span>张艺术</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary">教程分享</span></td>
+                                <td>1,234</td>
+                                <td>56</td>
+                                <td><span class="badge bg-success">已发布</span></td>
+                                <td>2024-02-01 10:30</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewPost(1001)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editPost(1001)">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning" onclick="togglePostStatus(1001)">
+                                            <i class="bi bi-eye-slash"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deletePost(1001)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="form-check-input post-checkbox" value="2"></td>
+                                <td>1002</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/post-thumbnails/2.jpg" class="rounded me-2" width="40"
+                                            height="30" alt="缩略图">
+                                        <div>
+                                            <div class="fw-bold">我的第一件绒花作品</div>
+                                            <small class="text-muted">历时三个月完成的绒花胸针...</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="24"
+                                            height="24">
+                                        <span>李手工</span>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info">作品展示</span></td>
+                                <td>892</td>
+                                <td>32</td>
+                                <td><span class="badge bg-warning">待审核</span></td>
+                                <td>2024-02-01 09:15</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-outline-info" onclick="viewPost(1002)">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success" onclick="approvePost(1002)">
+                                            <i class="bi bi-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="rejectPost(1002)">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 批量操作 -->
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-success" onclick="batchApprove()">
+                                <i class="bi bi-check-all"></i> 批量通过
+                            </button>
+                            <button type="button" class="btn btn-outline-warning" onclick="batchHide()">
+                                <i class="bi bi-eye-slash"></i> 批量隐藏
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" onclick="batchDelete()">
+                                <i class="bi bi-trash"></i> 批量删除
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <nav>
+                            <ul class="pagination mb-0">
+                                <li class="page-item disabled">
+                                    <span class="page-link">上一页</span>
+                                </li>
+                                <li class="page-item active">
+                                    <span class="page-link">1</span>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">下一页</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评论管理 -->
+            <div class="tab-pane fade" id="comments" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="搜索评论内容或用户...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option value="">所有状态</option>
+                            <option value="approved">已通过</option>
+                            <option value="pending">待审核</option>
+                            <option value="spam">垃圾评论</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>评论内容</th>
+                                <th>评论者</th>
+                                <th>所属帖子</th>
+                                <th>评论时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2001</td>
+                                <td>
+                                    <div class="comment-preview">
+                                        非常详细的教程，学到了很多！感谢分享...
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="24"
+                                            height="24">
+                                        <span>王学习</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="#" class="text-decoration-none">初学者绒花制作指南</a>
+                                </td>
+                                <td>2024-02-01 11:45</td>
+                                <td><span class="badge bg-success">已通过</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editComment(2001)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteComment(2001)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2002</td>
+                                <td>
+                                    <div class="comment-preview">
+                                        这个链接是垃圾信息，请不要点击...
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="24"
+                                            height="24">
+                                        <span>spam_user</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="#" class="text-decoration-none">我的第一件绒花作品</a>
+                                </td>
+                                <td>2024-02-01 08:30</td>
+                                <td><span class="badge bg-warning">待审核</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-success" onclick="approveComment(2002)">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="markSpam(2002)">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 分类管理 -->
+            <div class="tab-pane fade" id="categories" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#categoryModal">
+                            <i class="bi bi-plus"></i> 添加分类
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>分类名称</th>
+                                <th>描述</th>
+                                <th>帖子数量</th>
+                                <th>排序</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-book me-2 text-primary"></i>
+                                        <span>教程分享</span>
+                                    </div>
+                                </td>
+                                <td>分享绒花制作教程和技巧</td>
+                                <td>156</td>
+                                <td>1</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>2024-01-01</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editCategory(1)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(1)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-palette me-2 text-info"></i>
+                                        <span>作品展示</span>
+                                    </div>
+                                </td>
+                                <td>展示个人绒花作品</td>
+                                <td>289</td>
+                                <td>2</td>
+                                <td><span class="badge bg-success">启用</span></td>
+                                <td>2024-01-01</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editCategory(2)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(2)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 举报管理 -->
+            <div class="tab-pane fade" id="reports" role="tabpanel">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <select class="form-select">
+                            <option value="">所有举报类型</option>
+                            <option value="spam">垃圾信息</option>
+                            <option value="inappropriate">不当内容</option>
+                            <option value="copyright">版权侵犯</option>
+                            <option value="harassment">骚扰行为</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option value="">所有状态</option>
+                            <option value="pending">待处理</option>
+                            <option value="resolved">已处理</option>
+                            <option value="dismissed">已驳回</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>举报ID</th>
+                                <th>举报内容</th>
+                                <th>举报类型</th>
+                                <th>举报人</th>
+                                <th>被举报人</th>
+                                <th>举报时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>3001</td>
+                                <td>
+                                    <a href="#" class="text-decoration-none">初学者绒花制作指南</a>
+                                </td>
+                                <td><span class="badge bg-warning">垃圾信息</span></td>
+                                <td>用户A</td>
+                                <td>张艺术</td>
+                                <td>2024-02-01 14:30</td>
+                                <td><span class="badge bg-warning">待处理</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info" onclick="viewReport(3001)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="resolveReport(3001)">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="dismissReport(3001)">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 分类添加/编辑模态框 -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加分类</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">分类名称</label>
+                        <input type="text" class="form-control" id="categoryName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">分类描述</label>
+                        <textarea class="form-control" id="categoryDescription" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="categoryIcon" class="form-label">图标类名</label>
+                                <input type="text" class="form-control" id="categoryIcon" placeholder="bi-book">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="categorySort" class="form-label">排序权重</label>
+                                <input type="number" class="form-control" id="categorySort" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="categoryEnabled" checked>
+                            <label class="form-check-label" for="categoryEnabled">
+                                启用分类
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="saveCategory()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 公告发布模态框 -->
+<div class="modal fade" id="announcementModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">发布公告</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="announcementForm">
+                    <div class="mb-3">
+                        <label for="announcementTitle" class="form-label">公告标题</label>
+                        <input type="text" class="form-control" id="announcementTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="announcementContent" class="form-label">公告内容</label>
+                        <textarea class="form-control" id="announcementContent" rows="6" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="announcementType" class="form-label">公告类型</label>
+                                <select class="form-select" id="announcementType" required>
+                                    <option value="">选择类型</option>
+                                    <option value="notice">通知</option>
+                                    <option value="event">活动</option>
+                                    <option value="maintenance">维护</option>
+                                    <option value="urgent">紧急</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="announcementPriority" class="form-label">优先级</label>
+                                <select class="form-select" id="announcementPriority" required>
+                                    <option value="normal">普通</option>
+                                    <option value="high">高</option>
+                                    <option value="urgent">紧急</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="announcementPinned">
+                            <label class="form-check-label" for="announcementPinned">
+                                置顶公告
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="publishAnnouncement()">发布</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeCommunityManagement();
+        loadPosts();
+    });
+
+    // 初始化社区管理
+    function initializeCommunityManagement() {
+        // 绑定全选功能
+        const selectAllCheckbox = document.getElementById('selectAll');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function () {
+                const checkboxes = document.querySelectorAll('.post-checkbox');
+                checkboxes.forEach(cb => cb.checked = this.checked);
+            });
+        }
+
+        // 绑定公告表单提交事件
+        const announcementForm = document.getElementById('announcementForm');
+        if (announcementForm) {
+            announcementForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                publishAnnouncement();
+            });
+        }
+
+        // 绑定分类表单提交事件
+        const categoryForm = document.getElementById('categoryForm');
+        if (categoryForm) {
+            categoryForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                saveCategory();
+            });
+        }
+    }
+
+    // 加载帖子列表
+    function loadPosts(status = 'all') {
+        showMessage('正在加载帖子列表...', 'info');
+
+        let endpoint = '/admin/api/posts';
+        if (status !== 'all') {
+            endpoint += `?status=${status}`;
+        }
+
+        apiRequest(endpoint, 'GET')
+            .then(data => {
+                if (data.success) {
+                    updatePostsTable(data.posts);
+                    showMessage('', 'clear');
+                } else {
+                    showMessage('加载帖子失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('加载帖子失败:', error);
+                showMessage('加载帖子失败', 'error');
+            });
+    }
+
+    // 更新帖子表格
+    function updatePostsTable(posts) {
+        const tbody = document.querySelector('#postsTable tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        if (posts.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="bi bi-inbox fs-1"></i>
+                        <div class="mt-2">暂无帖子数据</div>
+                    </div>
+                </td>
+            </tr>
+        `;
+            return;
+        }
+
+        posts.forEach(post => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td><input type="checkbox" class="post-checkbox" value="${post.id}"></td>
+            <td>
+                <div class="fw-bold">${post.title}</div>
+                <small class="text-muted">ID: ${post.id}</small>
+            </td>
+            <td>${post.author_name || '-'}</td>
+            <td>${post.category_name || '-'}</td>
+            <td>
+                <span class="badge ${getStatusBadgeClass(post.status)}">${getStatusText(post.status)}</span>
+            </td>
+            <td>
+                <i class="bi bi-eye"></i> ${post.view_count || 0}
+                <i class="bi bi-chat ms-2"></i> ${post.comment_count || 0}
+            </td>
+            <td>${formatDate(post.created_at)}</td>
+            <td>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="viewPost(${post.id})" title="查看">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="approvePost(${post.id})" title="审核通过">
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-warning" onclick="rejectPost(${post.id})" title="审核拒绝">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletePost(${post.id})" title="删除">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 帖子管理功能
+    function viewPost(id) {
+        showMessage('正在加载帖子详情...', 'info');
+
+        apiRequest(`/admin/api/posts/${id}`, 'GET')
+            .then(post => {
+                if (post) {
+                    showPostDetails(post);
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取帖子详情失败:', error);
+                showMessage('获取帖子详情失败', 'error');
+            });
+    }
+
+    function editPost(id) {
+        window.location.href = `/admin/posts/edit/${id}`;
+    }
+
+    function togglePostStatus(id) {
+        if (confirm('确定要切换帖子状态吗？')) {
+            showMessage('正在更新帖子状态...', 'info');
+
+            apiRequest(`/admin/api/posts/${id}/toggle`, 'PUT')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('帖子状态更新成功', 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`状态更新失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('更新帖子状态失败:', error);
+                    showMessage('更新状态失败，请重试', 'error');
+                });
+        }
+    }
+
+    function deletePost(id) {
+        if (confirm('确定要删除这个帖子吗？此操作不可恢复！')) {
+            showMessage('正在删除帖子...', 'info');
+
+            apiRequest(`/admin/api/posts/${id}`, 'DELETE')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('帖子删除成功', 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`删除失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除帖子失败:', error);
+                    showMessage('删除帖子失败，请重试', 'error');
+                });
+        }
+    }
+
+    function approvePost(id) {
+        if (confirm('确定要审核通过这个帖子吗？')) {
+            showMessage('正在审核帖子...', 'info');
+
+            apiRequest(`/admin/api/posts/${id}/status`, 'PUT', { status: 'published' })
+                .then(data => {
+                    if (data.success) {
+                        showMessage('帖子审核通过', 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`审核失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('审核帖子失败:', error);
+                    showMessage('审核帖子失败，请重试', 'error');
+                });
+        }
+    }
+
+    function rejectPost(id) {
+        if (confirm('确定要拒绝这个帖子吗？')) {
+            showMessage('正在处理帖子...', 'info');
+
+            apiRequest(`/admin/api/posts/${id}/status`, 'PUT', { status: 'rejected' })
+                .then(data => {
+                    if (data.success) {
+                        showMessage('帖子已拒绝', 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`操作失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('处理帖子失败:', error);
+                    showMessage('处理帖子失败，请重试', 'error');
+                });
+        }
+    }
+
+    // 批量操作
+    function batchApprove() {
+        const selected = getSelectedPosts();
+        if (selected.length === 0) {
+            showMessage('请选择要操作的帖子', 'warning');
+            return;
+        }
+        if (confirm(`确定要批量通过选中的 ${selected.length} 个帖子吗？`)) {
+            showMessage('正在批量审核帖子...', 'info');
+
+            apiRequest('/admin/api/posts/batch/approve', 'POST', { post_ids: selected })
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`成功审核通过 ${data.updated_count} 个帖子`, 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`批量审核失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('批量审核失败:', error);
+                    showMessage('批量审核失败，请重试', 'error');
+                });
+        }
+    }
+
+    function batchHide() {
+        const selected = getSelectedPosts();
+        if (selected.length === 0) {
+            showMessage('请选择要操作的帖子', 'warning');
+            return;
+        }
+        if (confirm(`确定要批量隐藏选中的 ${selected.length} 个帖子吗？`)) {
+            showMessage('正在批量隐藏帖子...', 'info');
+
+            apiRequest('/admin/api/posts/batch/hide', 'POST', { post_ids: selected })
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`成功隐藏 ${data.updated_count} 个帖子`, 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`批量隐藏失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('批量隐藏失败:', error);
+                    showMessage('批量隐藏失败，请重试', 'error');
+                });
+        }
+    }
+
+    function batchDelete() {
+        const selected = getSelectedPosts();
+        if (selected.length === 0) {
+            showMessage('请选择要操作的帖子', 'warning');
+            return;
+        }
+        if (confirm(`确定要批量删除选中的 ${selected.length} 个帖子吗？此操作不可恢复！`)) {
+            showMessage('正在批量删除帖子...', 'info');
+
+            apiRequest('/admin/api/posts/batch/delete', 'POST', { post_ids: selected })
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`成功删除 ${data.deleted_count} 个帖子`, 'success');
+                        loadPosts();
+                    } else {
+                        showMessage(`批量删除失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('批量删除失败:', error);
+                    showMessage('批量删除失败，请重试', 'error');
+                });
+        }
+    }
+
+    function getSelectedPosts() {
+        return Array.from(document.querySelectorAll('.post-checkbox:checked')).map(cb => cb.value);
+    }
+
+    // 评论管理
+    function editComment(id) {
+        showMessage('正在加载评论信息...', 'info');
+
+        apiRequest(`/admin/api/comments/${id}`, 'GET')
+            .then(comment => {
+                if (comment) {
+                    // 显示编辑评论的模态框或界面
+                    showEditCommentModal(comment);
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取评论信息失败:', error);
+                showMessage('获取评论信息失败', 'error');
+            });
+    }
+
+    function deleteComment(id) {
+        if (confirm('确定要删除这条评论吗？此操作不可恢复！')) {
+            showMessage('正在删除评论...', 'info');
+
+            apiRequest(`/admin/api/comments/${id}`, 'DELETE')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('评论删除成功', 'success');
+                        location.reload();
+                    } else {
+                        showMessage(`删除失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除评论失败:', error);
+                    showMessage('删除评论失败，请重试', 'error');
+                });
+        }
+    }
+
+    function approveComment(id) {
+        if (confirm('确定要通过这条评论吗？')) {
+            showMessage('正在审核评论...', 'info');
+
+            apiRequest(`/admin/api/comments/${id}/approve`, 'PUT')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('评论审核通过', 'success');
+                        location.reload();
+                    } else {
+                        showMessage(`审核失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('审核评论失败:', error);
+                    showMessage('审核评论失败，请重试', 'error');
+                });
+        }
+    }
+
+    function markSpam(id) {
+        if (confirm('确定要标记为垃圾评论吗？')) {
+            showMessage('正在标记评论...', 'info');
+
+            apiRequest(`/admin/api/comments/${id}/spam`, 'PUT')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('评论已标记为垃圾评论', 'success');
+                        location.reload();
+                    } else {
+                        showMessage(`标记失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('标记评论失败:', error);
+                    showMessage('标记评论失败，请重试', 'error');
+                });
+        }
+    }
+
+    // 分类管理
+    function editCategory(id) {
+        showMessage('正在加载分类信息...', 'info');
+
+        apiRequest(`/admin/api/categories/${id}`, 'GET')
+            .then(category => {
+                if (category) {
+                    // 填充编辑表单
+                    document.getElementById('categoryName').value = category.name;
+                    document.getElementById('categoryDescription').value = category.description || '';
+
+                    // 设置为编辑模式
+                    document.querySelector('#categoryModal .modal-title').textContent = '编辑分类';
+                    document.getElementById('category_id').value = id;
+
+                    const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+                    modal.show();
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取分类信息失败:', error);
+                showMessage('获取分类信息失败', 'error');
+            });
+    }
+
+    function deleteCategory(id) {
+        if (confirm('确定要删除这个分类吗？删除后该分类下的帖子将移至默认分类。')) {
+            showMessage('正在删除分类...', 'info');
+
+            apiRequest(`/admin/api/categories/${id}`, 'DELETE')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('分类删除成功', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`删除失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除分类失败:', error);
+                    showMessage('删除分类失败，请重试', 'error');
+                });
+        }
+    }
+
+    function saveCategory() {
+        const form = document.getElementById('categoryForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = new FormData(form);
+        const categoryData = Object.fromEntries(formData);
+        const categoryId = document.getElementById('category_id').value;
+
+        const isEdit = categoryId && categoryId !== '';
+        const action = isEdit ? '更新' : '创建';
+
+        showMessage(`正在${action}分类...`, 'info');
+
+        const url = isEdit ? `/admin/api/categories/${categoryId}` : '/admin/api/categories';
+        const method = isEdit ? 'PUT' : 'POST';
+
+        apiRequest(url, method, categoryData)
+            .then(data => {
+                if (data.success) {
+                    showMessage(`分类${action}成功`, 'success');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
+                    if (modal) modal.hide();
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showMessage(`${action}分类失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error(`${action}分类失败:`, error);
+                showMessage(`${action}分类失败，请重试`, 'error');
+            });
+    }
+
+    // 举报管理
+    function viewReport(id) {
+        showMessage('正在加载举报详情...', 'info');
+
+        apiRequest(`/admin/api/reports/${id}`, 'GET')
+            .then(report => {
+                if (report) {
+                    showReportDetails(report);
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取举报详情失败:', error);
+                showMessage('获取举报详情失败', 'error');
+            });
+    }
+
+    function resolveReport(id) {
+        if (confirm('确定要标记为已处理吗？')) {
+            showMessage('正在处理举报...', 'info');
+
+            apiRequest(`/admin/api/reports/${id}/resolve`, 'PUT')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('举报处理成功', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`处理举报失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('处理举报失败:', error);
+                    showMessage('处理举报失败，请重试', 'error');
+                });
+        }
+    }
+
+    function dismissReport(id) {
+        if (confirm('确定要驳回这个举报吗？')) {
+            showMessage('正在驳回举报...', 'info');
+
+            apiRequest(`/admin/api/reports/${id}/dismiss`, 'PUT')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('举报驳回成功', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`驳回举报失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('驳回举报失败:', error);
+                    showMessage('驳回举报失败，请重试', 'error');
+                });
+        }
+    }
+
+    // 公告发布
+    function publishAnnouncement() {
+        const form = document.getElementById('announcementForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const title = document.getElementById('announcementTitle').value;
+        const content = document.getElementById('announcementContent').value;
+        const priority = document.getElementById('announcementPriority').value;
+
+        showMessage('正在发布公告...', 'info');
+
+        const announcementData = {
+            title: title,
+            content: content,
+            priority: priority
+        };
+
+        apiRequest('/admin/api/announcements', 'POST', announcementData)
+            .then(data => {
+                if (data.success) {
+                    showMessage('公告发布成功', 'success');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('announcementModal'));
+                    if (modal) modal.hide();
+
+                    form.reset();
+                } else {
+                    showMessage(`发布公告失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('发布公告失败:', error);
+                showMessage('发布公告失败，请重试', 'error');
+            });
+    }
+
+    // 导出功能
+    function exportPosts() {
+        showMessage('正在导出帖子数据...', 'info');
+
+        apiRequest('/admin/api/posts/export', 'GET')
+            .then(data => {
+                if (data.success) {
+                    // 创建下载链接
+                    const blob = new Blob([data.csv_data], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `posts_export_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    showMessage('帖子数据导出成功', 'success');
+                } else {
+                    showMessage(`导出失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('导出帖子失败:', error);
+                showMessage('导出帖子失败，请重试', 'error');
+            });
+    }
+
+    // 辅助函数
+    function getStatusBadgeClass(status) {
+        switch (status) {
+            case 'published': return 'bg-success';
+            case 'pending': return 'bg-warning';
+            case 'rejected': return 'bg-danger';
+            case 'draft': return 'bg-secondary';
+            default: return 'bg-secondary';
+        }
+    }
+
+    function getStatusText(status) {
+        switch (status) {
+            case 'published': return '已发布';
+            case 'pending': return '待审核';
+            case 'rejected': return '已拒绝';
+            case 'draft': return '草稿';
+            default: return '未知';
+        }
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showPostDetails(post) {
+        // 显示帖子详情模态框的实现
+        const detailsHtml = `
+        <div class="modal fade" id="postDetailsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">帖子详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>${post.title}</h6>
+                        <p class="text-muted">作者: ${post.author_name} | 发布时间: ${formatDate(post.created_at)}</p>
+                        <div class="mt-3">${post.content}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        const existingModal = document.getElementById('postDetailsModal');
+        if (existingModal) existingModal.remove();
+
+        document.body.insertAdjacentHTML('beforeend', detailsHtml);
+        const modal = new bootstrap.Modal(document.getElementById('postDetailsModal'));
+        modal.show();
+    }
+
+    function showReportDetails(report) {
+        // 显示举报详情的实现
+        alert(`举报详情：\n类型：${report.type}\n原因：${report.reason}\n举报时间：${formatDate(report.created_at)}`);
+    }
+
+    function showEditCommentModal(comment) {
+        // 显示编辑评论模态框的实现
+        alert(`编辑评论功能待完善\n评论ID：${comment.id}\n内容：${comment.content}`);
+    }
+</script>
+</script>
+
+<style>
+    .comment-preview {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+{% endblock %}

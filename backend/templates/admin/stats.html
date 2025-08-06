@@ -1,0 +1,648 @@
+{% extends "admin/base.html" %}
+
+{% block title %}数据统计{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-graph-up"></i> 数据统计
+            </h1>
+            <div>
+                <button type="button" class="btn btn-outline-primary" onclick="refreshStats()">
+                    <i class="bi bi-arrow-clockwise"></i> 刷新数据
+                </button>
+                <button type="button" class="btn btn-success" onclick="exportStats()">
+                    <i class="bi bi-download"></i> 导出报告
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 概览统计卡片 -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0" id="total-users">0</div>
+                        <div>总用户数</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0" id="total-posts">0</div>
+                        <div>总帖子数</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-chat-dots fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0" id="total-orders">0</div>
+                        <div>总订单数</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-cart fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0" id="total-revenue">¥0</div>
+                        <div>总收入</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-currency-dollar fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 图表区域 -->
+<div class="row mb-4">
+    <!-- 用户增长趋势 -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> 用户增长趋势
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="userGrowthChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 收入趋势 -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-currency-dollar"></i> 收入趋势
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- 内容分类统计 -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart"></i> 内容分类统计
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="contentCategoryChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单状态分布 -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-bar-chart"></i> 订单状态分布
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="orderStatusChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 详细数据表格 -->
+<div class="row">
+    <!-- 热门内容排行 -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-fire"></i> 热门内容排行
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>排名</th>
+                                <th>标题</th>
+                                <th>浏览量</th>
+                                <th>类型</th>
+                            </tr>
+                        </thead>
+                        <tbody id="popular-content-table">
+                            <tr>
+                                <td colspan="4" class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">加载中...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 活跃用户排行 -->
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-check"></i> 活跃用户排行
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>排名</th>
+                                <th>用户名</th>
+                                <th>发帖数</th>
+                                <th>最后活跃</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active-users-table">
+                            <tr>
+                                <td colspan="4" class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">加载中...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 时间范围选择器 -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-range"></i> 时间范围分析
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="start-date" class="form-label">开始日期</label>
+                        <input type="date" class="form-control" id="start-date">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="end-date" class="form-label">结束日期</label>
+                        <input type="date" class="form-control" id="end-date">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="metric-type" class="form-label">统计指标</label>
+                        <select class="form-select" id="metric-type">
+                            <option value="users">用户注册</option>
+                            <option value="posts">帖子发布</option>
+                            <option value="orders">订单创建</option>
+                            <option value="revenue">收入统计</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div>
+                            <button type="button" class="btn btn-primary w-100" onclick="analyzeTimeRange()">
+                                <i class="bi bi-search"></i> 分析
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <canvas id="timeRangeChart" width="400" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeStatsPage();
+        loadStatisticsData();
+    });
+
+    // 初始化统计页面
+    function initializeStatsPage() {
+        // 设置默认日期范围（最近30天）
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+
+        document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+        document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+    }
+
+    // 加载统计数据
+    function loadStatisticsData() {
+        showMessage('正在加载统计数据...', 'info');
+
+        apiRequest('/admin/api/stats', 'GET')
+            .then(data => {
+                if (data.success) {
+                    updateOverviewCards(data.overview);
+                    loadPopularContent();
+                    loadActiveUsers();
+                    createCharts(data);
+                    showMessage('', 'clear');
+                } else {
+                    showMessage('加载统计数据失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('加载统计数据失败:', error);
+                showMessage('加载统计数据失败', 'error');
+            });
+    }
+
+    // 更新概览卡片
+    function updateOverviewCards(overview) {
+        document.getElementById('total-users').textContent = overview.total_users || 0;
+        document.getElementById('total-posts').textContent = overview.total_posts || 0;
+        document.getElementById('total-orders').textContent = overview.total_orders || 0;
+        document.getElementById('total-revenue').textContent = '¥' + (overview.total_revenue || 0);
+    }
+
+    // 加载热门内容
+    function loadPopularContent() {
+        apiRequest('/admin/api/stats/popular-content', 'GET')
+            .then(data => {
+                if (data.success) {
+                    updatePopularContentTable(data.content);
+                }
+            })
+            .catch(error => {
+                console.error('加载热门内容失败:', error);
+            });
+    }
+
+    // 更新热门内容表格
+    function updatePopularContentTable(content) {
+        const tbody = document.getElementById('popular-content-table');
+        tbody.innerHTML = '';
+
+        if (content.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center py-3 text-muted">暂无数据</td>
+            </tr>
+        `;
+            return;
+        }
+
+        content.forEach((item, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td><span class="badge bg-primary">${index + 1}</span></td>
+            <td>
+                <div class="fw-bold">${item.title}</div>
+                <small class="text-muted">ID: ${item.id}</small>
+            </td>
+            <td><i class="bi bi-eye"></i> ${item.view_count}</td>
+            <td><span class="badge bg-info">${item.type}</span></td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 加载活跃用户
+    function loadActiveUsers() {
+        apiRequest('/admin/api/stats/active-users', 'GET')
+            .then(data => {
+                if (data.success) {
+                    updateActiveUsersTable(data.users);
+                }
+            })
+            .catch(error => {
+                console.error('加载活跃用户失败:', error);
+            });
+    }
+
+    // 更新活跃用户表格
+    function updateActiveUsersTable(users) {
+        const tbody = document.getElementById('active-users-table');
+        tbody.innerHTML = '';
+
+        if (users.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center py-3 text-muted">暂无数据</td>
+            </tr>
+        `;
+            return;
+        }
+
+        users.forEach((user, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td><span class="badge bg-success">${index + 1}</span></td>
+            <td>
+                <div class="fw-bold">${user.username}</div>
+                <small class="text-muted">ID: ${user.id}</small>
+            </td>
+            <td><i class="bi bi-chat"></i> ${user.post_count}</td>
+            <td><small>${formatDate(user.last_active)}</small></td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 创建图表
+    function createCharts(data) {
+        createUserGrowthChart(data.user_growth || []);
+        createRevenueChart(data.revenue_trend || []);
+        createContentCategoryChart(data.content_categories || []);
+        createOrderStatusChart(data.order_status || []);
+    }
+
+    // 用户增长趋势图
+    function createUserGrowthChart(data) {
+        const ctx = document.getElementById('userGrowthChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => item.date),
+                datasets: [{
+                    label: '新增用户',
+                    data: data.map(item => item.count),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 收入趋势图
+    function createRevenueChart(data) {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.date),
+                datasets: [{
+                    label: '收入 (¥)',
+                    data: data.map(item => item.amount),
+                    backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 内容分类饼图
+    function createContentCategoryChart(data) {
+        const ctx = document.getElementById('contentCategoryChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.map(item => item.category),
+                datasets: [{
+                    data: data.map(item => item.count),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 205, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    // 订单状态柱状图
+    function createOrderStatusChart(data) {
+        const ctx = document.getElementById('orderStatusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.status),
+                datasets: [{
+                    label: '订单数量',
+                    data: data.map(item => item.count),
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.6)',
+                        'rgba(13, 202, 240, 0.6)',
+                        'rgba(25, 135, 84, 0.6)',
+                        'rgba(220, 53, 69, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 时间范围分析
+    function analyzeTimeRange() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const metricType = document.getElementById('metric-type').value;
+
+        if (!startDate || !endDate) {
+            showMessage('请选择开始和结束日期', 'warning');
+            return;
+        }
+
+        showMessage('正在分析时间范围数据...', 'info');
+
+        const params = new URLSearchParams({
+            start_date: startDate,
+            end_date: endDate,
+            metric: metricType
+        });
+
+        apiRequest(`/admin/api/stats/time-range?${params}`, 'GET')
+            .then(data => {
+                if (data.success) {
+                    createTimeRangeChart(data.data, metricType);
+                    showMessage('时间范围分析完成', 'success');
+                } else {
+                    showMessage('分析失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('时间范围分析失败:', error);
+                showMessage('分析失败，请重试', 'error');
+            });
+    }
+
+    // 创建时间范围图表
+    function createTimeRangeChart(data, metricType) {
+        const ctx = document.getElementById('timeRangeChart').getContext('2d');
+
+        // 销毁现有图表
+        if (window.timeRangeChartInstance) {
+            window.timeRangeChartInstance.destroy();
+        }
+
+        const metricLabels = {
+            users: '用户注册',
+            posts: '帖子发布',
+            orders: '订单创建',
+            revenue: '收入统计'
+        };
+
+        window.timeRangeChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => item.date),
+                datasets: [{
+                    label: metricLabels[metricType],
+                    data: data.map(item => item.value),
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // 刷新统计数据
+    function refreshStats() {
+        loadStatisticsData();
+    }
+
+    // 导出统计报告
+    function exportStats() {
+        showMessage('正在生成统计报告...', 'info');
+
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+
+        const params = new URLSearchParams({
+            start_date: startDate,
+            end_date: endDate,
+            format: 'excel'
+        });
+
+        apiRequest(`/admin/api/stats/export?${params}`, 'GET')
+            .then(data => {
+                if (data.success) {
+                    // 创建下载链接
+                    const blob = new Blob([data.excel_data], {
+                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `stats_report_${new Date().toISOString().split('T')[0]}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    showMessage('统计报告导出成功', 'success');
+                } else {
+                    showMessage('导出失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('导出统计报告失败:', error);
+                showMessage('导出失败，请重试', 'error');
+            });
+    }
+
+    // 格式化日期
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    }
+</script>
+{% endblock %}

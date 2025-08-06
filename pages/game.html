@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣味闯关 - 绒花非遗传承平台</title>
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/game.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="绒花" class="logo">
+                <span class="brand-text">绒花非遗</span>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="nav-toggle" onclick="toggleMobileMenu()" aria-label="切换菜单" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu-wrapper">
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">首页</a></li>
+                    <li><a href="encyclopedia.html" class="nav-link">非遗百科</a></li>
+                    <li><a href="tutorial.html" class="nav-link">视频教程</a></li>
+                    <li><a href="community.html" class="nav-link">社区论坛</a></li>
+                    <li><a href="shop.html" class="nav-link">文创商城</a></li>
+                    <li><a href="game.html" class="nav-link active">趣味闯关</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+
+            <!-- 移动端遮罩层 -->
+            <div class="nav-overlay" onclick="closeMobileMenu()"></div>
+        </nav>
+    </header>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">趣味闯关</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 页面标题 -->
+        <section class="page-header">
+            <div class="container">
+                <h1>绒花知识闯关</h1>
+                <p>在游戏中学习传统绒花文化，挑战你的知识极限！</p>
+
+                <!-- 用户游戏信息 -->
+                <div class="user-game-info">
+                    <div class="info-item">
+                        <div class="info-label">当前等级</div>
+                        <div class="info-value" id="userLevel">初学者</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">总积分</div>
+                        <div class="info-value" id="userScore">0</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">通关数</div>
+                        <div class="info-value" id="completedLevels">0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 游戏模式选择 -->
+        <section class="game-modes">
+            <div class="container">
+                <h2>选择游戏模式</h2>
+                <div class="modes-grid">
+                    <!-- 闯关模式 -->
+                    <div class="mode-card" onclick="selectMode('adventure')">
+                        <div class="mode-icon">🏰</div>
+                        <h3>闯关模式</h3>
+                        <p>循序渐进，从基础知识到高级技巧</p>
+                        <div class="mode-progress">
+                            <span>进度: <span id="adventureProgress">1/20</span></span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 5%"></div>
+                            </div>
+                        </div>
+                        <button class="btn-primary">开始闯关</button>
+                    </div>
+
+                    <!-- 快速问答 -->
+                    <div class="mode-card" onclick="selectMode('quiz')">
+                        <div class="mode-icon">⚡</div>
+                        <h3>快速问答</h3>
+                        <p>60秒内回答尽可能多的问题</p>
+                        <div class="mode-stats">
+                            <span>最高分: <span id="quizBestScore">0</span></span>
+                        </div>
+                        <button class="btn-primary">开始挑战</button>
+                    </div>
+
+                    <!-- 识图挑战 -->
+                    <div class="mode-card" onclick="selectMode('image')">
+                        <div class="mode-icon">🖼️</div>
+                        <h3>识图挑战</h3>
+                        <p>通过图片识别不同的绒花作品</p>
+                        <div class="mode-stats">
+                            <span>准确率: <span id="imageAccuracy">0%</span></span>
+                        </div>
+                        <button class="btn-primary">开始识图</button>
+                    </div>
+
+                    <!-- 知识竞赛 -->
+                    <div class="mode-card coming-soon">
+                        <div class="mode-icon">🏆</div>
+                        <h3>知识竞赛</h3>
+                        <p>与其他玩家实时PK绒花知识</p>
+                        <div class="coming-soon-badge">即将推出</div>
+                        <button class="btn-secondary" disabled>敬请期待</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 游戏区域 -->
+        <section class="game-area" id="gameArea" style="display: none;">
+            <div class="container">
+                <!-- 游戏头部信息 -->
+                <div class="game-header">
+                    <div class="game-info">
+                        <div class="current-level">第 <span id="currentLevel">1</span> 关</div>
+                        <div class="current-score">分数: <span id="currentScore">0</span></div>
+                        <div class="timer" id="gameTimer">60</div>
+                    </div>
+                    <button class="btn-exit" onclick="exitGame()">退出游戏</button>
+                </div>
+
+                <!-- 游戏内容区 -->
+                <div class="game-content">
+                    <!-- 问答游戏 -->
+                    <div class="quiz-container" id="quizContainer">
+                        <div class="question-card">
+                            <div class="question-number">问题 <span id="questionNumber">1</span></div>
+                            <div class="question-text" id="questionText">加载中...</div>
+                            <div class="question-image" id="questionImage" style="display: none;">
+                                <img src="" alt="题目图片">
+                            </div>
+                            <div class="options-container" id="optionsContainer">
+                                <!-- 动态生成选项 -->
+                            </div>
+                            <div class="question-feedback" id="questionFeedback"></div>
+                        </div>
+                    </div>
+
+                    <!-- 游戏结果 -->
+                    <div class="game-result" id="gameResult" style="display: none;">
+                        <div class="result-card">
+                            <div class="result-icon" id="resultIcon">🎉</div>
+                            <h3 id="resultTitle">恭喜通关！</h3>
+                            <div class="result-stats">
+                                <div class="stat-item">
+                                    <div class="stat-label">本次得分</div>
+                                    <div class="stat-value" id="finalScore">0</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">正确率</div>
+                                    <div class="stat-value" id="accuracyRate">0%</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">用时</div>
+                                    <div class="stat-value" id="timeUsed">0秒</div>
+                                </div>
+                            </div>
+                            <div class="result-actions">
+                                <button class="btn-primary" onclick="restartGame()">再玩一次</button>
+                                <button class="btn-secondary" onclick="backToModes()">返回选择</button>
+                                <button class="btn-share" onclick="shareResult()">分享成绩</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 排行榜 -->
+        <section class="leaderboard">
+            <div class="container">
+                <h2>排行榜</h2>
+                <div class="leaderboard-tabs">
+                    <button class="tab-btn active" onclick="showLeaderboard('overall')">总榜</button>
+                    <button class="tab-btn" onclick="showLeaderboard('weekly')">周榜</button>
+                    <button class="tab-btn" onclick="showLeaderboard('friends')">好友榜</button>
+                </div>
+
+                <div class="leaderboard-content" id="leaderboardContent">
+                    <div class="leaderboard-list">
+                        <div class="rank-item top-rank">
+                            <div class="rank-number">🥇</div>
+                            <div class="user-avatar">
+                                <img src="../assets/images/user1.jpg" alt="绒花大师">
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">绒花大师</div>
+                                <div class="user-level">传承者</div>
+                            </div>
+                            <div class="user-score">9,876</div>
+                        </div>
+
+                        <div class="rank-item top-rank">
+                            <div class="rank-number">🥈</div>
+                            <div class="user-avatar">
+                                <img src="../assets/images/user2.jpg" alt="花艺师小美">
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">花艺师小美</div>
+                                <div class="user-level">专家</div>
+                            </div>
+                            <div class="user-score">8,543</div>
+                        </div>
+
+                        <div class="rank-item top-rank">
+                            <div class="rank-number">🥉</div>
+                            <div class="user-avatar">
+                                <img src="../assets/images/user3.jpg" alt="传统工艺爱好者">
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">传统工艺爱好者</div>
+                                <div class="user-level">熟练者</div>
+                            </div>
+                            <div class="user-score">7,892</div>
+                        </div>
+
+                        <div class="rank-item">
+                            <div class="rank-number">4</div>
+                            <div class="user-avatar">
+                                <img src="../assets/images/user4.jpg" alt="匠心独运">
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">匠心独运</div>
+                                <div class="user-level">学习者</div>
+                            </div>
+                            <div class="user-score">6,234</div>
+                        </div>
+
+                        <div class="rank-item">
+                            <div class="rank-number">5</div>
+                            <div class="user-avatar">
+                                <img src="../assets/images/user5.jpg" alt="新手小白">
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">新手小白</div>
+                                <div class="user-level">初学者</div>
+                            </div>
+                            <div class="user-score">4,567</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 成就系统 -->
+        <section class="achievements">
+            <div class="container">
+                <h2>成就徽章</h2>
+                <div class="achievements-grid" id="achievementsGrid">
+                    <div class="achievement-card unlocked">
+                        <div class="achievement-icon">🌟</div>
+                        <h4>初出茅庐</h4>
+                        <p>完成第一次游戏</p>
+                        <div class="achievement-date">2025-01-20</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon">🎯</div>
+                        <h4>百发百中</h4>
+                        <p>连续答对10题</p>
+                        <div class="achievement-progress">进度: 3/10</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon">⚡</div>
+                        <h4>闪电答题</h4>
+                        <p>60秒内答对20题</p>
+                        <div class="achievement-progress">进度: 0/20</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon">🏆</div>
+                        <h4>知识大师</h4>
+                        <p>通关所有关卡</p>
+                        <div class="achievement-progress">进度: 1/20</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon">👑</div>
+                        <h4>榜首王者</h4>
+                        <p>登上排行榜第一名</p>
+                        <div class="achievement-progress">未解锁</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-icon">🔥</div>
+                        <h4>连续挑战</h4>
+                        <p>连续7天完成游戏</p>
+                        <div class="achievement-progress">进度: 1/7</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 分享结果模态框 -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeShareModal()">&times;</span>
+            <h2>分享游戏成绩</h2>
+            <div class="share-preview">
+                <div class="share-card">
+                    <div class="share-header">绒花知识闯关</div>
+                    <div class="share-content">
+                        <div class="share-score">我获得了 <span id="shareScore">0</span> 分！</div>
+                        <div class="share-accuracy">正确率达到了 <span id="shareAccuracy">0%</span></div>
+                        <div class="share-cta">快来挑战你的绒花知识吧！</div>
+                    </div>
+                </div>
+            </div>
+            <div class="share-buttons">
+                <button class="btn-share-wechat" onclick="shareToWechat()">
+                    <span class="share-icon">💬</span>
+                    分享到微信
+                </button>
+                <button class="btn-share-weibo" onclick="shareToWeibo()">
+                    <span class="share-icon">📱</span>
+                    分享到微博
+                </button>
+                <button class="btn-copy-link" onclick="copyShareLink()">
+                    <span class="share-icon">🔗</span>
+                    复制链接
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>绒花非遗传承平台</h3>
+                    <p>致力于传承和发扬中华传统绒花艺术</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="about.html">关于我们</a></li>
+                        <li><a href="contact.html">联系我们</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系方式</h4>
+                    <p>邮箱：info@ronghua-heritage.com</p>
+                    <p>电话：400-123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 绒花非遗传承平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/game.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文创商城 - 绒花非遗传承平台</title>
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <link rel="stylesheet" href="../assets/css/shop.css">
+</head>
+
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="绒花" class="logo">
+                <span class="brand-text">绒花非遗</span>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="nav-toggle" onclick="toggleMobileMenu()" aria-label="切换菜单" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <!-- 导航菜单 -->
+            <div class="nav-menu-wrapper">
+                <ul class="nav-menu">
+                    <li><a href="../index.html" class="nav-link">首页</a></li>
+                    <li><a href="encyclopedia.html" class="nav-link">非遗百科</a></li>
+                    <li><a href="tutorial.html" class="nav-link">视频教程</a></li>
+                    <li><a href="community.html" class="nav-link">社区论坛</a></li>
+                    <li><a href="shop.html" class="nav-link active">文创商城</a></li>
+                    <li><a href="game.html" class="nav-link">趣味闯关</a></li>
+                </ul>
+
+                <div class="nav-user">
+                    <button class="btn-login" onclick="showLogin()">登录</button>
+                    <button class="btn-register" onclick="showRegister()">注册</button>
+                </div>
+            </div>
+
+            <!-- 移动端遮罩层 -->
+            <div class="nav-overlay" onclick="closeMobileMenu()"></div>
+        </nav>
+    </header>
+
+    <!-- 面包屑导航 -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="../index.html">首页</a>
+            <span class="separator">></span>
+            <span class="current">文创商城</span>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+        <!-- 页面标题 -->
+        <section class="page-header">
+            <div class="container">
+                <h1>绒花文创商城</h1>
+                <p>传统工艺与现代设计的完美融合</p>
+                <!-- 购物车图标 -->
+                <div class="cart-icon" onclick="showCart()">
+                    <span class="cart-symbol">🛒</span>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 商品分类与筛选 -->
+        <section class="shop-filters">
+            <div class="container">
+                <div class="filter-bar">
+                    <div class="category-filters">
+                        <button class="filter-btn active" data-category="all"
+                            onclick="filterByCategory('all')">全部商品</button>
+                        <button class="filter-btn" data-category="finished"
+                            onclick="filterByCategory('finished')">成品绒花</button>
+                        <button class="filter-btn" data-category="materials"
+                            onclick="filterByCategory('materials')">制作材料</button>
+                        <button class="filter-btn" data-category="tools"
+                            onclick="filterByCategory('tools')">工具套装</button>
+                        <button class="filter-btn" data-category="digital"
+                            onclick="filterByCategory('digital')">数字藏品</button>
+                        <button class="filter-btn" data-category="gifts"
+                            onclick="filterByCategory('gifts')">礼品套装</button>
+                    </div>
+
+                    <div class="sort-options">
+                        <select id="sortSelect" onchange="sortProducts()">
+                            <option value="default">默认排序</option>
+                            <option value="price-low">价格从低到高</option>
+                            <option value="price-high">价格从高到低</option>
+                            <option value="popularity">人气推荐</option>
+                            <option value="newest">最新上架</option>
+                        </select>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="搜索商品..." onkeyup="searchProducts()">
+                        <button onclick="searchProducts()">🔍</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 商品网格 -->
+        <section class="products-section">
+            <div class="container">
+                <div class="products-grid" id="productsGrid">
+                    <!-- 成品绒花 -->
+                    <div class="product-card" data-category="finished" data-price="188" data-popularity="95">
+                        <div class="product-image">
+                            <img src="../assets/images/product1.jpg" alt="经典红色牡丹">
+                            <div class="product-badge hot">热销</div>
+                            <div class="product-actions">
+                                <button class="btn-quick-view" onclick="quickView(this)">👁️</button>
+                                <button class="btn-wishlist" onclick="toggleWishlist(this)">❤️</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">经典红色牡丹绒花</h3>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-count">(126)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">¥188</span>
+                                <span class="original-price">¥298</span>
+                            </div>
+                            <div class="product-desc">传统手工制作，精选优质丝绸材料</div>
+                            <button class="btn-add-cart" onclick="addToCart(this, 'product1')">加入购物车</button>
+                        </div>
+                    </div>
+
+                    <!-- 制作材料 -->
+                    <div class="product-card" data-category="materials" data-price="56" data-popularity="87">
+                        <div class="product-image">
+                            <img src="../assets/images/product2.jpg" alt="彩色丝绸材料包">
+                            <div class="product-badge new">新品</div>
+                            <div class="product-actions">
+                                <button class="btn-quick-view" onclick="quickView(this)">👁️</button>
+                                <button class="btn-wishlist" onclick="toggleWishlist(this)">❤️</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">彩色丝绸材料包</h3>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-count">(89)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">¥56</span>
+                            </div>
+                            <div class="product-desc">12种颜色丝绸，适合初学者练习</div>
+                            <button class="btn-add-cart" onclick="addToCart(this, 'product2')">加入购物车</button>
+                        </div>
+                    </div>
+
+                    <!-- 工具套装 -->
+                    <div class="product-card" data-category="tools" data-price="128" data-popularity="78">
+                        <div class="product-image">
+                            <img src="../assets/images/product3.jpg" alt="专业绒花制作工具套装">
+                            <div class="product-actions">
+                                <button class="btn-quick-view" onclick="quickView(this)">👁️</button>
+                                <button class="btn-wishlist" onclick="toggleWishlist(this)">❤️</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">专业绒花制作工具套装</h3>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-count">(156)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">¥128</span>
+                                <span class="original-price">¥168</span>
+                            </div>
+                            <div class="product-desc">专业工具15件套，大师推荐</div>
+                            <button class="btn-add-cart" onclick="addToCart(this, 'product3')">加入购物车</button>
+                        </div>
+                    </div>
+
+                    <!-- 数字藏品 -->
+                    <div class="product-card" data-category="digital" data-price="99" data-popularity="92">
+                        <div class="product-image">
+                            <img src="../assets/images/product4.jpg" alt="限量版数字绒花NFT">
+                            <div class="product-badge limited">限量</div>
+                            <div class="product-actions">
+                                <button class="btn-quick-view" onclick="quickView(this)">👁️</button>
+                                <button class="btn-wishlist" onclick="toggleWishlist(this)">❤️</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">限量版数字绒花NFT</h3>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-count">(67)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">¥99</span>
+                            </div>
+                            <div class="product-desc">区块链认证，永久收藏价值</div>
+                            <div class="stock-info">仅剩 <span class="stock-count">23</span> 份</div>
+                            <button class="btn-add-cart" onclick="addToCart(this, 'product4')">立即购买</button>
+                        </div>
+                    </div>
+
+                    <!-- 礼品套装 -->
+                    <div class="product-card" data-category="gifts" data-price="288" data-popularity="88">
+                        <div class="product-image">
+                            <img src="../assets/images/product5.jpg" alt="春节主题礼品套装">
+                            <div class="product-badge gift">礼品</div>
+                            <div class="product-actions">
+                                <button class="btn-quick-view" onclick="quickView(this)">👁️</button>
+                                <button class="btn-wishlist" onclick="toggleWishlist(this)">❤️</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">春节主题礼品套装</h3>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-count">(98)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">¥288</span>
+                                <span class="original-price">¥368</span>
+                            </div>
+                            <div class="product-desc">精美包装，节日送礼首选</div>
+                            <button class="btn-add-cart" onclick="addToCart(this, 'product5')">加入购物车</button>
+                        </div>
+                    </div>
+
+                    <!-- 更多商品... -->
+                    <div class="product-card" data-category="finished" data-price="156" data-popularity="76">
+                        <div class="product-image">
+                            <img src="../assets/images/product6.jpg" alt="粉色莲花绒花">
+                            <div class="product-actions">
+                                <button class="btn-quick-view" onclick="quickView(this)">👁️</button>
+                                <button class="btn-wishlist" onclick="toggleWishlist(this)">❤️</button>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">粉色莲花绒花</h3>
+                            <div class="product-rating">
+                                <span class="stars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-count">(45)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">¥156</span>
+                            </div>
+                            <div class="product-desc">清雅脱俗，居家装饰佳品</div>
+                            <button class="btn-add-cart" onclick="addToCart(this, 'product6')">加入购物车</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加载更多 -->
+                <div class="load-more">
+                    <button class="btn-secondary" onclick="loadMoreProducts()">加载更多商品</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 购物车侧边栏 -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>购物车</h3>
+            <button class="close-cart" onclick="hideCart()">&times;</button>
+        </div>
+        <div class="cart-content" id="cartContent">
+            <div class="empty-cart">
+                <div class="empty-icon">🛒</div>
+                <p>购物车还是空的</p>
+                <p>快去挑选心仪的商品吧！</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>总计：¥<span id="cartTotal">0</span></span>
+            </div>
+            <button class="btn-checkout" onclick="checkout()">去结算</button>
+        </div>
+    </div>
+
+    <!-- 商品快速预览模态框 -->
+    <div id="quickViewModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="closeQuickView()">&times;</span>
+            <div class="quick-view-content" id="quickViewContent">
+                <!-- 动态加载商品详情 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付说明模态框 -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <h2>支付说明</h2>
+            <div class="payment-info">
+                <div class="info-item">
+                    <h4>🔒 安全支付</h4>
+                    <p>支持微信支付、支付宝等多种安全支付方式</p>
+                </div>
+                <div class="info-item">
+                    <h4>🚚 配送服务</h4>
+                    <p>全国包邮，3-7个工作日内送达</p>
+                </div>
+                <div class="info-item">
+                    <h4>🔄 售后保障</h4>
+                    <p>7天无理由退换，质量问题免费退换</p>
+                </div>
+                <div class="info-item">
+                    <h4>📞 客服支持</h4>
+                    <p>专业客服团队，为您提供贴心服务</p>
+                </div>
+            </div>
+            <p class="note">注：当前为演示版本，暂不支持真实交易</p>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>绒花非遗传承平台</h3>
+                    <p>致力于传承和发扬中华传统绒花艺术</p>
+                </div>
+                <div class="footer-links">
+                    <h4>快速链接</h4>
+                    <ul>
+                        <li><a href="about.html">关于我们</a></li>
+                        <li><a href="contact.html">联系我们</a></li>
+                        <li><a href="privacy.html">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>联系方式</h4>
+                    <p>邮箱：info@ronghua-heritage.com</p>
+                    <p>电话：400-123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 绒花非遗传承平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/shop.js"></script>
+</body>
+
+</html>

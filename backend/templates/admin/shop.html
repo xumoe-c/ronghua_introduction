@@ -1,0 +1,1007 @@
+{% extends "admin/base.html" %}
+
+{% block title %}商城管理{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-shop"></i> 商城管理
+            </h1>
+            <div>
+                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal"
+                    data-bs-target="#addProductModal">
+                    <i class="bi bi-plus-circle"></i> 添加商品
+                </button>
+                <button type="button" class="btn btn-primary" onclick="exportOrders()">
+                    <i class="bi bi-download"></i> 导出订单
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.total_products or 0 }}</div>
+                        <div>商品总数</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-box-seam fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.active_products or 0 }}</div>
+                        <div>在售商品</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-check-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.total_orders or 0 }}</div>
+                        <div>订单总数</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-receipt fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ stats.pending_orders or 0 }}</div>
+                        <div>待处理订单</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 标签页 -->
+<ul class="nav nav-tabs" id="shopTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button"
+            role="tab">
+            <i class="bi bi-box-seam"></i> 商品管理
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">
+            <i class="bi bi-receipt"></i> 订单管理
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content mt-3" id="shopTabsContent">
+    <!-- 商品管理标签页 -->
+    <div class="tab-pane fade show active" id="products" role="tabpanel">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">商品列表</h5>
+                <div class="d-flex gap-2">
+                    <select class="form-select form-select-sm" style="width: auto;">
+                        <option>所有分类</option>
+                        <option>发饰</option>
+                        <option>工具</option>
+                        <option>材料</option>
+                    </select>
+                    <select class="form-select form-select-sm" style="width: auto;">
+                        <option>所有状态</option>
+                        <option>在售</option>
+                        <option>下架</option>
+                        <option>缺货</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>商品信息</th>
+                                <th>分类</th>
+                                <th>价格</th>
+                                <th>库存</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded bg-light d-flex align-items-center justify-content-center me-3"
+                                            style="width: 50px; height: 50px;">
+                                            <i class="bi bi-image text-muted"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ product.name }}</div>
+                                            <small class="text-muted">ID: {{ product.id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ product.category }}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">¥{{ '%.2f'|format(product.price) }}</span>
+                                </td>
+                                <td>
+                                    {% if product.stock > 10 %}
+                                    <span class="badge bg-success">{{ product.stock }}</span>
+                                    {% elif product.stock > 0 %}
+                                    <span class="badge bg-warning">{{ product.stock }}</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">缺货</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if product.status == 'available' %}
+                                    <span class="badge bg-success">在售</span>
+                                    {% elif product.status == 'inactive' %}
+                                    <span class="badge bg-secondary">下架</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">{{ product.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span title="{{ product.created_at }}">
+                                        {{ product.created_at.strftime('%Y-%m-%d') if product.created_at else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                            onclick="viewProduct({{ product.id }})">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning"
+                                            onclick="editProduct({{ product.id }})">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                            onclick="deleteProduct({{ product.id }})">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1"></i>
+                                        <div class="mt-2">暂无商品数据</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单管理标签页 -->
+    <div class="tab-pane fade" id="orders" role="tabpanel">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">订单列表</h5>
+                <div class="d-flex gap-2">
+                    <input type="date" class="form-control form-control-sm" style="width: auto;">
+                    <select class="form-select form-select-sm" style="width: auto;">
+                        <option>所有状态</option>
+                        <option>待支付</option>
+                        <option>已支付</option>
+                        <option>已发货</option>
+                        <option>已完成</option>
+                        <option>已取消</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>订单号</th>
+                                <th>买家</th>
+                                <th>商品数量</th>
+                                <th>订单金额</th>
+                                <th>支付方式</th>
+                                <th>订单状态</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-primary">{{ order.order_number or 'ORD-' + order.id|string
+                                        }}</div>
+                                </td>
+                                <td>{{ order.user.username if order.user else '未知用户' }}</td>
+                                <td>{{ order.order_items|length if order.order_items else 0 }}</td>
+                                <td>
+                                    <span class="fw-bold text-success">¥{{ '%.2f'|format(order.total_amount) }}</span>
+                                </td>
+                                <td>{{ order.payment_method or '未设置' }}</td>
+                                <td>
+                                    {% if order.status == 'pending' %}
+                                    <span class="badge bg-warning">待支付</span>
+                                    {% elif order.status == 'paid' %}
+                                    <span class="badge bg-success">已支付</span>
+                                    {% elif order.status == 'shipped' %}
+                                    <span class="badge bg-info">已发货</span>
+                                    {% elif order.status == 'completed' %}
+                                    <span class="badge bg-success">已完成</span>
+                                    {% elif order.status == 'cancelled' %}
+                                    <span class="badge bg-danger">已取消</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ order.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span title="{{ order.created_at }}">
+                                        {{ order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary"
+                                            onclick="viewOrder({{ order.id }})">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        {% if order.status == 'paid' %}
+                                        <button type="button" class="btn btn-sm btn-outline-success"
+                                            onclick="shipOrder({{ order.id }})">
+                                            <i class="bi bi-truck"></i>
+                                        </button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-sm btn-outline-info"
+                                            onclick="printOrder({{ order.id }})">
+                                            <i class="bi bi-printer"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1"></i>
+                                        <div class="mt-2">暂无订单数据</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加商品模态框 -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle"></i> 添加新商品
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addProductForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="prod_name" class="form-label">商品名称 *</label>
+                                <input type="text" class="form-control" id="prod_name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="prod_category" class="form-label">分类 *</label>
+                                <select class="form-select" id="prod_category" name="category" required>
+                                    <option value="">请选择分类</option>
+                                    <option value="发饰">发饰</option>
+                                    <option value="工具">工具</option>
+                                    <option value="材料">材料</option>
+                                    <option value="书籍">书籍</option>
+                                    <option value="其他">其他</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prod_description" class="form-label">商品描述</label>
+                        <textarea class="form-control" id="prod_description" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="prod_price" class="form-label">价格 *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">¥</span>
+                                    <input type="number" class="form-control" id="prod_price" name="price" step="0.01"
+                                        min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="prod_stock" class="form-label">库存数量 *</label>
+                                <input type="number" class="form-control" id="prod_stock" name="stock" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="prod_status" class="form-label">状态</label>
+                                <select class="form-select" id="prod_status" name="status">
+                                    <option value="available">在售</option>
+                                    <option value="inactive">下架</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="prod_images" class="form-label">商品图片</label>
+                        <input type="file" class="form-control" id="prod_images" multiple accept="image/*">
+                        <div class="form-text">支持多张图片上传，建议尺寸 800x800px</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check"></i> 创建商品
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑商品模态框 -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProductModalLabel">
+                    <i class="bi bi-pencil-square"></i> 编辑商品
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="edit_product_id" name="id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="edit_product_name" class="form-label">商品名称 *</label>
+                                <input type="text" class="form-control" id="edit_product_name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="edit_product_price" class="form-label">价格 *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">¥</span>
+                                    <input type="number" class="form-control" id="edit_product_price" name="price"
+                                        step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_product_stock" class="form-label">库存数量 *</label>
+                                <input type="number" class="form-control" id="edit_product_stock" name="stock" min="0"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_product_is_active" class="form-label">状态</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="edit_product_is_active"
+                                        name="is_active">
+                                    <label class="form-check-label" for="edit_product_is_active">
+                                        商品上架状态
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_product_description" class="form-label">商品描述</label>
+                        <textarea class="form-control" id="edit_product_description" name="description"
+                            rows="4"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="edit_product_image_url" class="form-label">商品图片URL</label>
+                        <input type="url" class="form-control" id="edit_product_image_url" name="image_url">
+                        <div class="form-text">请输入图片的完整URL地址</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> 更新商品
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeShopManagement();
+        loadProducts();
+        loadOrders();
+    });
+
+    // 初始化商店管理
+    function initializeShopManagement() {
+        // 绑定商品表单提交事件
+        const addProductForm = document.getElementById('addProductForm');
+        if (addProductForm) {
+            addProductForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const productData = Object.fromEntries(formData);
+                saveProduct(productData);
+            });
+        }
+
+        // 绑定编辑商品表单提交事件
+        const editProductForm = document.getElementById('editProductForm');
+        if (editProductForm) {
+            editProductForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const productData = Object.fromEntries(formData);
+                productData.id = document.getElementById('edit_product_id').value;
+                saveProduct(productData, false);
+            });
+        }
+    }
+
+    // 加载商品列表
+    function loadProducts() {
+        showMessage('正在加载商品列表...', 'info');
+
+        apiRequest('/admin/api/products', 'GET')
+            .then(data => {
+                if (data.success) {
+                    updateProductsTable(data.products);
+                    showMessage('', 'clear');
+                } else {
+                    showMessage('加载商品失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('加载商品失败:', error);
+                showMessage('加载商品失败', 'error');
+            });
+    }
+
+    // 更新商品表格
+    function updateProductsTable(products) {
+        const tbody = document.querySelector('#productsTable tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        if (products.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="bi bi-inbox fs-1"></i>
+                        <div class="mt-2">暂无商品数据</div>
+                    </div>
+                </td>
+            </tr>
+        `;
+            return;
+        }
+
+        products.forEach(product => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>
+                ${product.image_url ?
+                    `<img src="${product.image_url}" alt="${product.name}" width="50" height="50" class="rounded">` :
+                    '<div class="bg-light rounded d-flex align-items-center justify-content-center" style="width:50px;height:50px;"><i class="bi bi-image"></i></div>'
+                }
+            </td>
+            <td>
+                <div class="fw-bold">${product.name}</div>
+                <small class="text-muted">ID: ${product.id}</small>
+            </td>
+            <td>¥${product.price}</td>
+            <td>${product.stock || 0}</td>
+            <td>
+                <span class="badge ${product.is_active ? 'bg-success' : 'bg-secondary'}">
+                    ${product.is_active ? '上架' : '下架'}
+                </span>
+            </td>
+            <td>${formatDate(product.created_at)}</td>
+            <td>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="viewProduct(${product.id})" title="查看">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="editProduct(${product.id})" title="编辑">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-warning" onclick="toggleProductStatus(${product.id}, ${!product.is_active})" title="${product.is_active ? '下架' : '上架'}">
+                        <i class="bi bi-${product.is_active ? 'eye-slash' : 'eye'}"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${product.id})" title="删除">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 加载订单列表
+    function loadOrders() {
+        showMessage('正在加载订单列表...', 'info');
+
+        apiRequest('/admin/api/orders', 'GET')
+            .then(data => {
+                if (data.success) {
+                    updateOrdersTable(data.orders);
+                    showMessage('', 'clear');
+                } else {
+                    showMessage('加载订单失败', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('加载订单失败:', error);
+                showMessage('加载订单失败', 'error');
+            });
+    }
+
+    // 更新订单表格
+    function updateOrdersTable(orders) {
+        const tbody = document.querySelector('#ordersTable tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        if (orders.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center py-4">
+                    <div class="text-muted">
+                        <i class="bi bi-inbox fs-1"></i>
+                        <div class="mt-2">暂无订单数据</div>
+                    </div>
+                </td>
+            </tr>
+        `;
+            return;
+        }
+
+        orders.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>
+                <div class="fw-bold">${order.order_number}</div>
+                <small class="text-muted">ID: ${order.id}</small>
+            </td>
+            <td>${order.user_name || '-'}</td>
+            <td>¥${order.total_amount}</td>
+            <td>
+                <span class="badge ${getOrderStatusBadgeClass(order.status)}">
+                    ${getOrderStatusText(order.status)}
+                </span>
+            </td>
+            <td>${formatDate(order.created_at)}</td>
+            <td>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="viewOrder(${order.id})" title="查看">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="updateOrderStatus(${order.id}, 'shipped')" title="发货">
+                        <i class="bi bi-truck"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="printOrder(${order.id})" title="打印">
+                        <i class="bi bi-printer"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // 商品管理相关函数
+    function viewProduct(productId) {
+        showMessage('正在加载商品详情...', 'info');
+
+        apiRequest(`/admin/api/products/${productId}`, 'GET')
+            .then(product => {
+                if (product) {
+                    showProductDetails(product);
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取商品详情失败:', error);
+                showMessage('获取商品详情失败', 'error');
+            });
+    }
+
+    function editProduct(productId) {
+        showMessage('正在加载商品信息...', 'info');
+
+        apiRequest(`/admin/api/products/${productId}`, 'GET')
+            .then(product => {
+                if (product) {
+                    // 填充编辑表单
+                    document.getElementById('edit_product_id').value = product.id;
+                    document.getElementById('edit_product_name').value = product.name;
+                    document.getElementById('edit_product_price').value = product.price;
+                    document.getElementById('edit_product_stock').value = product.stock;
+                    document.getElementById('edit_product_description').value = product.description || '';
+                    document.getElementById('edit_product_image_url').value = product.image_url || '';
+                    document.getElementById('edit_product_is_active').checked = product.is_active;
+
+                    const editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+                    editModal.show();
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取商品信息失败:', error);
+                showMessage('获取商品信息失败', 'error');
+            });
+    }
+
+    function deleteProduct(productId) {
+        if (confirm('确定要删除此商品吗？此操作不可恢复！')) {
+            showMessage('正在删除商品...', 'info');
+
+            apiRequest(`/admin/api/products/${productId}`, 'DELETE')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('商品删除成功', 'success');
+                        loadProducts(); // 重新加载商品列表
+                    } else {
+                        showMessage(`删除失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除商品失败:', error);
+                    showMessage('删除商品失败，请重试', 'error');
+                });
+        }
+    }
+
+    function toggleProductStatus(productId, isActive) {
+        const action = isActive ? '上架' : '下架';
+        if (confirm(`确定要${action}此商品吗？`)) {
+            showMessage(`正在${action}商品...`, 'info');
+
+            apiRequest(`/admin/api/products/${productId}/toggle`, 'PUT', { is_active: isActive })
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`商品${action}成功`, 'success');
+                        loadProducts(); // 重新加载商品列表
+                    } else {
+                        showMessage(`${action}失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(`${action}商品失败:`, error);
+                    showMessage(`${action}商品失败，请重试`, 'error');
+                });
+        }
+    }
+
+    // 保存商品（新增或编辑）
+    function saveProduct(productData, isNew = true) {
+        const action = isNew ? '添加' : '更新';
+        showMessage(`正在${action}商品...`, 'info');
+
+        const url = isNew ? '/admin/api/products' : `/admin/api/products/${productData.id}`;
+        const method = isNew ? 'POST' : 'PUT';
+
+        apiRequest(url, method, productData)
+            .then(data => {
+                if (data.success) {
+                    showMessage(`${action}商品成功`, 'success');
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById(isNew ? 'addProductModal' : 'editProductModal')
+                    );
+                    if (modal) modal.hide();
+
+                    // 重新加载商品列表
+                    loadProducts();
+                } else {
+                    showMessage(`${action}商品失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error(`${action}商品失败:`, error);
+                showMessage(`${action}商品失败，请重试`, 'error');
+            });
+    }
+
+    // 订单管理相关函数
+    function viewOrder(orderId) {
+        showMessage('正在加载订单详情...', 'info');
+
+        apiRequest(`/admin/api/orders/${orderId}`, 'GET')
+            .then(order => {
+                if (order) {
+                    showOrderDetails(order);
+                    showMessage('', 'clear');
+                }
+            })
+            .catch(error => {
+                console.error('获取订单详情失败:', error);
+                showMessage('获取订单详情失败', 'error');
+            });
+    }
+
+    function updateOrderStatus(orderId, status) {
+        const statusText = getOrderStatusText(status);
+        if (confirm(`确定要将订单状态更新为"${statusText}"吗？`)) {
+            showMessage('正在更新订单状态...', 'info');
+
+            apiRequest(`/admin/api/orders/${orderId}/status`, 'PUT', { status: status })
+                .then(data => {
+                    if (data.success) {
+                        showMessage('订单状态更新成功', 'success');
+                        loadOrders(); // 重新加载订单列表
+                    } else {
+                        showMessage(`状态更新失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('更新订单状态失败:', error);
+                    showMessage('更新订单状态失败，请重试', 'error');
+                });
+        }
+    }
+
+    function shipOrder(orderId) {
+        updateOrderStatus(orderId, 'shipped');
+    }
+
+    function printOrder(orderId) {
+        showMessage('正在生成打印页面...', 'info');
+
+        apiRequest(`/admin/api/orders/${orderId}/print`, 'GET')
+            .then(data => {
+                if (data.success) {
+                    // 打开新窗口显示打印页面
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(data.print_html);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.print();
+
+                    showMessage('打印页面已生成', 'success');
+                } else {
+                    showMessage(`生成打印页面失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('生成打印页面失败:', error);
+                showMessage('生成打印页面失败，请重试', 'error');
+            });
+    }
+
+    function exportOrders() {
+        showMessage('正在导出订单数据...', 'info');
+
+        apiRequest('/admin/api/orders/export', 'GET')
+            .then(data => {
+                if (data.success) {
+                    // 创建下载链接
+                    const blob = new Blob([data.csv_data], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `orders_export_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+
+                    showMessage('订单数据导出成功', 'success');
+                } else {
+                    showMessage(`导出失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('导出订单失败:', error);
+                showMessage('导出订单失败，请重试', 'error');
+            });
+    }
+
+    // 辅助函数
+    function getOrderStatusBadgeClass(status) {
+        switch (status) {
+            case 'pending': return 'bg-warning';
+            case 'paid': return 'bg-info';
+            case 'shipped': return 'bg-primary';
+            case 'delivered': return 'bg-success';
+            case 'cancelled': return 'bg-danger';
+            default: return 'bg-secondary';
+        }
+    }
+
+    function getOrderStatusText(status) {
+        switch (status) {
+            case 'pending': return '待付款';
+            case 'paid': return '已付款';
+            case 'shipped': return '已发货';
+            case 'delivered': return '已送达';
+            case 'cancelled': return '已取消';
+            default: return '未知';
+        }
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showProductDetails(product) {
+        // 显示商品详情模态框
+        const detailsHtml = `
+        <div class="modal fade" id="productDetailsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">商品详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                ${product.image_url ?
+                `<img src="${product.image_url}" alt="${product.name}" class="img-fluid rounded">` :
+                '<div class="bg-light rounded d-flex align-items-center justify-content-center" style="height:200px;"><i class="bi bi-image fs-1"></i></div>'
+            }
+                            </div>
+                            <div class="col-md-8">
+                                <h6>${product.name}</h6>
+                                <p class="text-muted">价格: ¥${product.price}</p>
+                                <p class="text-muted">库存: ${product.stock}</p>
+                                <p class="text-muted">状态: ${product.is_active ? '上架' : '下架'}</p>
+                                <p class="text-muted">创建时间: ${formatDate(product.created_at)}</p>
+                                <div class="mt-3">
+                                    <strong>商品描述:</strong>
+                                    <div class="mt-2">${product.description || '暂无描述'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        const existingModal = document.getElementById('productDetailsModal');
+        if (existingModal) existingModal.remove();
+
+        document.body.insertAdjacentHTML('beforeend', detailsHtml);
+        const modal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+        modal.show();
+    }
+
+    function showOrderDetails(order) {
+        // 显示订单详情模态框
+        const itemsList = order.items ? order.items.map(item =>
+            `<li class="list-group-item d-flex justify-content-between">
+            <span>${item.product_name} x ${item.quantity}</span>
+            <span>¥${item.subtotal}</span>
+        </li>`
+        ).join('') : '<li class="list-group-item">暂无商品信息</li>';
+
+        const detailsHtml = `
+        <div class="modal fade" id="orderDetailsModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">订单详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h6>订单号: ${order.order_number}</h6>
+                        <p class="text-muted">用户: ${order.user_name} | 下单时间: ${formatDate(order.created_at)}</p>
+                        <p class="text-muted">状态: <span class="badge ${getOrderStatusBadgeClass(order.status)}">${getOrderStatusText(order.status)}</span></p>
+                        
+                        <div class="mt-3">
+                            <strong>订单商品:</strong>
+                            <ul class="list-group mt-2">
+                                ${itemsList}
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <strong>订单总额: ¥${order.total_amount}</strong>
+                        </div>
+                        
+                        ${order.shipping_address ? `
+                            <div class="mt-3">
+                                <strong>收货地址:</strong>
+                                <div class="mt-2">${order.shipping_address}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+        const existingModal = document.getElementById('orderDetailsModal');
+        if (existingModal) existingModal.remove();
+
+        document.body.insertAdjacentHTML('beforeend', detailsHtml);
+        const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+        modal.show();
+    }
+</script>
+</script>
+{% endblock %}

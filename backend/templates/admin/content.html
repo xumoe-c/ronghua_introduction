@@ -1,0 +1,584 @@
+{% extends "admin/base.html" %}
+
+{% block title %}内容管理{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-file-text"></i> 内容管理
+            </h1>
+            <div>
+                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal"
+                    data-bs-target="#addEncyclopediaModal">
+                    <i class="bi bi-plus-circle"></i> 添加百科
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTutorialModal">
+                    <i class="bi bi-plus-circle"></i> 添加教程
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ encyclopedia_total or 0 }}</div>
+                        <div>百科内容</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-book fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="h4 mb-0">{{ tutorial_total or 0 }}</div>
+                        <div>视频教程</div>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-play-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 标签页 -->
+<ul class="nav nav-tabs" id="contentTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="encyclopedia-tab" data-bs-toggle="tab" data-bs-target="#encyclopedia"
+            type="button" role="tab">
+            <i class="bi bi-book"></i> 百科内容
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tutorials-tab" data-bs-toggle="tab" data-bs-target="#tutorials" type="button"
+            role="tab">
+            <i class="bi bi-play-circle"></i> 视频教程
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content mt-3" id="contentTabsContent">
+    <!-- 百科内容标签页 -->
+    <div class="tab-pane fade show active" id="encyclopedia" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">百科内容列表</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>标题</th>
+                                <th>分类</th>
+                                <th>作者</th>
+                                <th>状态</th>
+                                <th>浏览量</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for content in encyclopedia_contents %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ content.title }}</div>
+                                    <small class="text-muted">ID: {{ content.id }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ content.category }}</span>
+                                </td>
+                                <td>{{ content.author.username if content.author else '系统' }}</td>
+                                <td>
+                                    {% if content.status == 'published' %}
+                                    <span class="badge bg-success">已发布</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">草稿</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ content.view_count or 0 }}</td>
+                                <td>
+                                    <span title="{{ content.created_at }}">
+                                        {{ content.created_at.strftime('%Y-%m-%d') if content.created_at else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1"></i>
+                                        <div class="mt-2">暂无百科内容</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频教程标签页 -->
+    <div class="tab-pane fade" id="tutorials" role="tabpanel">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">视频教程列表</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>标题</th>
+                                <th>分类</th>
+                                <th>难度</th>
+                                <th>时长</th>
+                                <th>讲师</th>
+                                <th>状态</th>
+                                <th>浏览量</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tutorial in tutorials %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ tutorial.title }}</div>
+                                    <small class="text-muted">ID: {{ tutorial.id }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ tutorial.category }}</span>
+                                </td>
+                                <td>
+                                    {% set difficulty_colors = {'1': 'success', '2': 'info', '3': 'warning', '4':
+                                    'danger', '5': 'dark'} %}
+                                    {% set difficulty_names = {'1': '入门', '2': '初级', '3': '中级', '4': '高级', '5': '专家'} %}
+                                    <span
+                                        class="badge bg-{{ difficulty_colors.get(tutorial.difficulty_level|string, 'secondary') }}">
+                                        {{ difficulty_names.get(tutorial.difficulty_level|string, '未知') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if tutorial.duration %}
+                                    {{ (tutorial.duration // 60) }}:{{ '%02d'|format(tutorial.duration % 60) }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>{{ tutorial.instructor.username if tutorial.instructor else '系统' }}</td>
+                                <td>
+                                    {% if tutorial.status == 'published' %}
+                                    <span class="badge bg-success">已发布</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">草稿</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ tutorial.view_count or 0 }}</td>
+                                <td>
+                                    <span title="{{ tutorial.created_at }}">
+                                        {{ tutorial.created_at.strftime('%Y-%m-%d') if tutorial.created_at else '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox fs-1"></i>
+                                        <div class="mt-2">暂无视频教程</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加百科模态框 -->
+<div class="modal fade" id="addEncyclopediaModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-book-fill"></i> 添加百科内容
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addEncyclopediaForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="enc_title" class="form-label">标题 *</label>
+                                <input type="text" class="form-control" id="enc_title" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="enc_category" class="form-label">分类 *</label>
+                                <select class="form-select" id="enc_category" name="category" required>
+                                    <option value="">请选择分类</option>
+                                    <option value="历史文化">历史文化</option>
+                                    <option value="制作工艺">制作工艺</option>
+                                    <option value="文化内涵">文化内涵</option>
+                                    <option value="名师介绍">名师介绍</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="enc_content" class="form-label">内容 *</label>
+                        <textarea class="form-control" id="enc_content" name="content" rows="8" required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enc_tags" class="form-label">标签</label>
+                                <input type="text" class="form-control" id="enc_tags" name="tags"
+                                    placeholder="用逗号分隔多个标签">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="enc_status" class="form-label">状态</label>
+                                <select class="form-select" id="enc_status" name="status">
+                                    <option value="draft">草稿</option>
+                                    <option value="published">发布</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> 创建百科
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 添加教程模态框 -->
+<div class="modal fade" id="addTutorialModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-play-circle-fill"></i> 添加视频教程
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addTutorialForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="tut_title" class="form-label">标题 *</label>
+                                <input type="text" class="form-control" id="tut_title" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tut_category" class="form-label">分类 *</label>
+                                <select class="form-select" id="tut_category" name="category" required>
+                                    <option value="">请选择分类</option>
+                                    <option value="基础教程">基础教程</option>
+                                    <option value="进阶教程">进阶教程</option>
+                                    <option value="专业技巧">专业技巧</option>
+                                    <option value="名师指导">名师指导</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tut_description" class="form-label">描述</label>
+                        <textarea class="form-control" id="tut_description" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="tut_video_url" class="form-label">视频链接 *</label>
+                                <input type="url" class="form-control" id="tut_video_url" name="video_url" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="tut_thumbnail_url" class="form-label">缩略图链接</label>
+                                <input type="url" class="form-control" id="tut_thumbnail_url" name="thumbnail_url">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tut_difficulty" class="form-label">难度等级</label>
+                                <select class="form-select" id="tut_difficulty" name="difficulty_level">
+                                    <option value="1">入门</option>
+                                    <option value="2">初级</option>
+                                    <option value="3">中级</option>
+                                    <option value="4">高级</option>
+                                    <option value="5">专家</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tut_duration" class="form-label">时长(秒)</label>
+                                <input type="number" class="form-control" id="tut_duration" name="duration" min="0">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="tut_status" class="form-label">状态</label>
+                                <select class="form-select" id="tut_status" name="status">
+                                    <option value="draft">草稿</option>
+                                    <option value="published">发布</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> 创建教程
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeContentManagement();
+    });
+
+    // 初始化内容管理
+    function initializeContentManagement() {
+        // 绑定百科表单提交事件
+        const encyclopediaForm = document.getElementById('addEncyclopediaForm');
+        if (encyclopediaForm) {
+            encyclopediaForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const encyclopediaData = Object.fromEntries(formData);
+                saveEncyclopedia(encyclopediaData);
+            });
+        }
+
+        // 绑定教程表单提交事件
+        const tutorialForm = document.getElementById('addTutorialForm');
+        if (tutorialForm) {
+            tutorialForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const tutorialData = Object.fromEntries(formData);
+                saveTutorial(tutorialData);
+            });
+        }
+    }
+
+    // 保存百科内容
+    function saveEncyclopedia(data) {
+        showMessage('正在创建百科内容...', 'info');
+
+        apiRequest('/admin/api/encyclopedia', 'POST', data)
+            .then(result => {
+                if (result.success) {
+                    showMessage('百科内容创建成功', 'success');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addEncyclopediaModal'));
+                    if (modal) modal.hide();
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showMessage(`创建失败: ${result.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('创建百科失败:', error);
+                showMessage('创建百科失败，请重试', 'error');
+            });
+    }
+
+    // 保存教程内容
+    function saveTutorial(data) {
+        showMessage('正在创建教程...', 'info');
+
+        apiRequest('/admin/api/tutorials', 'POST', data)
+            .then(result => {
+                if (result.success) {
+                    showMessage('教程创建成功', 'success');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addTutorialModal'));
+                    if (modal) modal.hide();
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showMessage(`创建失败: ${result.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('创建教程失败:', error);
+                showMessage('创建教程失败，请重试', 'error');
+            });
+    }
+
+    // 编辑内容
+    function editContent(type, id) {
+        showMessage('正在加载内容信息...', 'info');
+
+        const endpoint = type === 'encyclopedia' ? `/admin/api/encyclopedia/${id}` : `/admin/api/tutorials/${id}`;
+
+        apiRequest(endpoint, 'GET')
+            .then(content => {
+                if (content) {
+                    // 填充编辑表单
+                    fillEditForm(type, content);
+
+                    // 显示编辑模态框
+                    const modalId = type === 'encyclopedia' ? 'editEncyclopediaModal' : 'editTutorialModal';
+                    const editModal = new bootstrap.Modal(document.getElementById(modalId));
+                    editModal.show();
+                }
+            })
+            .catch(error => {
+                console.error('获取内容信息失败:', error);
+                showMessage('获取内容信息失败', 'error');
+            });
+    }
+
+    // 填充编辑表单
+    function fillEditForm(type, content) {
+        const prefix = type === 'encyclopedia' ? 'edit_enc' : 'edit_tut';
+
+        document.getElementById(`${prefix}_id`).value = content.id;
+        document.getElementById(`${prefix}_title`).value = content.title;
+        document.getElementById(`${prefix}_content`).value = content.content;
+        document.getElementById(`${prefix}_category`).value = content.category || '';
+
+        if (type === 'tutorial') {
+            document.getElementById(`${prefix}_video_url`).value = content.video_url || '';
+            document.getElementById(`${prefix}_duration`).value = content.duration || '';
+            document.getElementById(`${prefix}_description`).value = content.description || '';
+        }
+    }
+
+    // 删除内容
+    function deleteContent(type, id) {
+        const contentType = type === 'encyclopedia' ? '百科' : '教程';
+
+        if (confirm(`确定要删除该${contentType}吗？此操作不可恢复！`)) {
+            showMessage(`正在删除${contentType}...`, 'info');
+
+            const endpoint = type === 'encyclopedia' ? `/admin/api/encyclopedia/${id}` : `/admin/api/tutorials/${id}`;
+
+            apiRequest(endpoint, 'DELETE')
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`删除${contentType}成功`, 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`删除${contentType}失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(`删除${contentType}失败:`, error);
+                    showMessage(`删除${contentType}失败，请重试`, 'error');
+                });
+        }
+    }
+
+    // 切换内容状态
+    function toggleContentStatus(type, id, status) {
+        const contentType = type === 'encyclopedia' ? '百科' : '教程';
+        const action = status ? '发布' : '下架';
+
+        if (confirm(`确定要${action}该${contentType}吗？`)) {
+            showMessage(`正在${action}${contentType}...`, 'info');
+
+            const endpoint = type === 'encyclopedia' ?
+                `/admin/api/encyclopedia/${id}/toggle` :
+                `/admin/api/tutorials/${id}/toggle`;
+
+            apiRequest(endpoint, 'PUT', { is_published: status })
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`${action}${contentType}成功`, 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`${action}${contentType}失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(`${action}${contentType}失败:`, error);
+                    showMessage(`${action}${contentType}失败，请重试`, 'error');
+                });
+        }
+    }
+</script>
+{% endblock %}

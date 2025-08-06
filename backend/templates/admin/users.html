@@ -1,0 +1,507 @@
+{% extends "admin/base.html" %}
+
+{% block title %}用户管理{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-people"></i> 用户管理
+            </h1>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="bi bi-plus-circle"></i> 添加用户
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 搜索和过滤 -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="搜索用户名或邮箱" id="searchInput">
+        </div>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="statusFilter">
+            <option value="">所有状态</option>
+            <option value="active">活跃</option>
+            <option value="inactive">未激活</option>
+            <option value="blocked">已封禁</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" id="sortBy">
+            <option value="created_at">注册时间</option>
+            <option value="username">用户名</option>
+            <option value="email">邮箱</option>
+            <option value="login_at">最后登录</option>
+        </select>
+    </div>
+</div>
+
+<!-- 用户列表 -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">用户列表</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>用户头像</th>
+                        <th>用户名</th>
+                        <th>邮箱</th>
+                        <th>手机号</th>
+                        <th>状态</th>
+                        <th>注册时间</th>
+                        <th>最后登录</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            {% if user.avatar %}
+                            <img src="{{ user.avatar }}" alt="Avatar" class="rounded-circle" width="40" height="40">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; color: white;">
+                                {{ user.username[0].upper() if user.username else 'U' }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ user.username }}</div>
+                            <small class="text-muted">ID: {{ user.id }}</small>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.phone or '-' }}</td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge bg-success">活跃</span>
+                            {% else %}
+                            <span class="badge bg-secondary">未激活</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span title="{{ user.created_at }}">
+                                {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '-' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span title="{{ user.last_login_at }}">
+                                {{ user.last_login_at.strftime('%Y-%m-%d %H:%M') if user.last_login_at else '从未登录' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                    onclick="editUser({{ user.id }})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                {% if user.is_active %}
+                                <button type="button" class="btn btn-sm btn-outline-warning"
+                                    onclick="toggleUserStatus({{ user.id }}, false)">
+                                    <i class="bi bi-ban"></i>
+                                </button>
+                                {% else %}
+                                <button type="button" class="btn btn-sm btn-outline-success"
+                                    onclick="toggleUserStatus({{ user.id }}, true)">
+                                    <i class="bi bi-check-circle"></i>
+                                </button>
+                                {% endif %}
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    onclick="deleteUser({{ user.id }})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <div class="mt-2">暂无用户数据</div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 分页 -->
+<nav aria-label="用户列表分页" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {{ 'disabled' if current_page <= 1 else '' }}">
+            <a class="page-link" href="?page={{ current_page - 1 }}" aria-label="上一页">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        {% for page_num in range(1, total_pages + 1) %}
+        {% if page_num == current_page %}
+        <li class="page-item active">
+            <span class="page-link">{{ page_num }}</span>
+        </li>
+        {% elif page_num <= 3 or page_num> total_pages - 3 or (page_num >= current_page - 1 and page_num <= current_page
+                + 1) %} <li class="page-item">
+                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+                {% elif page_num == 4 or page_num == total_pages - 3 %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                <li class="page-item {{ 'disabled' if current_page >= total_pages else '' }}">
+                    <a class="page-link" href="?page={{ current_page + 1 }}" aria-label="下一页">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+    </ul>
+</nav>
+
+<!-- 添加用户模态框 -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">
+                    <i class="bi bi-person-plus"></i> 添加新用户
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addUserForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="add_username" class="form-label">用户名 *</label>
+                                <input type="text" class="form-control" id="add_username" name="username" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="add_email" class="form-label">邮箱 *</label>
+                                <input type="email" class="form-control" id="add_email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="add_phone" class="form-label">手机号</label>
+                                <input type="tel" class="form-control" id="add_phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="add_password" class="form-label">密码 *</label>
+                                <input type="password" class="form-control" id="add_password" name="password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="add_full_name" class="form-label">真实姓名</label>
+                                <input type="text" class="form-control" id="add_full_name" name="full_name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="add_is_active" class="form-label">状态</label>
+                                <select class="form-select" id="add_is_active" name="is_active">
+                                    <option value="true">活跃</option>
+                                    <option value="false">未激活</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> 创建用户
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑用户模态框 -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">
+                    <i class="bi bi-person-gear"></i> 编辑用户
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="edit_user_id" name="id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_username" class="form-label">用户名 *</label>
+                                <input type="text" class="form-control" id="edit_username" name="username" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_email" class="form-label">邮箱 *</label>
+                                <input type="email" class="form-control" id="edit_email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_phone" class="form-label">手机号</label>
+                                <input type="tel" class="form-control" id="edit_phone" name="phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_is_active" class="form-label">状态</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="edit_is_active"
+                                        name="is_active">
+                                    <label class="form-check-label" for="edit_is_active">
+                                        用户活跃状态
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check"></i> 更新用户
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeUserManagement();
+    });
+
+    // 初始化用户管理
+    function initializeUserManagement() {
+        // 绑定添加用户表单提交事件
+        const addUserForm = document.getElementById('addUserForm');
+        if (addUserForm) {
+            addUserForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const userData = Object.fromEntries(formData);
+                saveUser(userData, true);
+            });
+        }
+
+        // 绑定编辑用户表单提交事件
+        const editUserForm = document.getElementById('editUserForm');
+        if (editUserForm) {
+            editUserForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const userData = Object.fromEntries(formData);
+                userData.id = document.getElementById('edit_user_id').value;
+                saveUser(userData, false);
+            });
+        }
+
+        // 绑定搜索和过滤事件
+        bindSearchAndFilter();
+    }
+
+    // 编辑用户
+    function editUser(userId) {
+        showMessage('正在加载用户信息...', 'info');
+
+        apiRequest('/admin/api/users/' + userId, 'GET')
+            .then(user => {
+                if (user) {
+                    document.getElementById('edit_user_id').value = user.id;
+                    document.getElementById('edit_username').value = user.username;
+                    document.getElementById('edit_email').value = user.email;
+                    document.getElementById('edit_phone').value = user.phone || '';
+                    document.getElementById('edit_is_active').checked = user.is_active;
+
+                    const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                    editModal.show();
+                }
+            })
+            .catch(error => {
+                console.error('获取用户信息失败:', error);
+                showMessage('获取用户信息失败', 'error');
+            });
+    }
+
+    // 保存用户（新增或编辑）
+    function saveUser(userData, isNew = true) {
+        const action = isNew ? '添加' : '更新';
+        showMessage(`正在${action}用户...`, 'info');
+
+        const url = isNew ? '/admin/api/users' : `/admin/api/users/${userData.id}`;
+        const method = isNew ? 'POST' : 'PUT';
+
+        apiRequest(url, method, userData)
+            .then(data => {
+                if (data.success) {
+                    showMessage(`${action}用户成功`, 'success');
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(
+                        document.getElementById(isNew ? 'addUserModal' : 'editUserModal')
+                    );
+                    if (modal) modal.hide();
+
+                    // 刷新页面或更新用户列表
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    showMessage(`${action}用户失败: ${data.message || '未知错误'}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error(`${action}用户失败:`, error);
+                showMessage(`${action}用户失败，请重试`, 'error');
+            });
+    }
+
+    // 切换用户状态
+    function toggleUserStatus(userId, status) {
+        const action = status ? '激活' : '禁用';
+        if (confirm(`确定要${action}该用户吗？`)) {
+            showMessage(`正在${action}用户...`, 'info');
+
+            apiRequest(`/admin/api/users/${userId}/toggle`, 'PUT', { is_active: status })
+                .then(data => {
+                    if (data.success) {
+                        showMessage(`${action}用户成功`, 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`${action}用户失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error(`${action}用户失败:`, error);
+                    showMessage(`${action}用户失败，请重试`, 'error');
+                });
+        }
+    }
+
+    // 删除用户
+    function deleteUser(userId) {
+        if (confirm('确定要删除该用户吗？此操作不可恢复！')) {
+            showMessage('正在删除用户...', 'info');
+
+            apiRequest(`/admin/api/users/${userId}`, 'DELETE')
+                .then(data => {
+                    if (data.success) {
+                        showMessage('删除用户成功', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showMessage(`删除用户失败: ${data.message || '未知错误'}`, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除用户失败:', error);
+                    showMessage('删除用户失败，请重试', 'error');
+                });
+        }
+    }
+
+    // 绑定搜索和过滤功能
+    function bindSearchAndFilter() {
+        // 搜索功能 - 防抖处理
+        let searchTimeout;
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(this.value);
+                }, 500);
+            });
+        }
+
+        // 状态过滤
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', function () {
+                performFilter('status', this.value);
+            });
+        }
+
+        // 排序功能
+        const sortBy = document.getElementById('sortBy');
+        if (sortBy) {
+            sortBy.addEventListener('change', function () {
+                performSort(this.value);
+            });
+        }
+    }
+
+    // 执行搜索
+    function performSearch(query) {
+        if (!query.trim()) {
+            location.href = '/admin/users';
+            return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        params.set('search', query);
+        params.delete('page'); // 重置到第一页
+        location.href = '/admin/users?' + params.toString();
+    }
+
+    // 执行过滤
+    function performFilter(type, value) {
+        const params = new URLSearchParams(window.location.search);
+        if (value) {
+            params.set(type, value);
+        } else {
+            params.delete(type);
+        }
+        params.delete('page'); // 重置到第一页
+        location.href = '/admin/users?' + params.toString();
+    }
+
+    // 执行排序
+    function performSort(sortBy) {
+        const params = new URLSearchParams(window.location.search);
+        if (sortBy) {
+            params.set('sort', sortBy);
+        } else {
+            params.delete('sort');
+        }
+        params.delete('page'); // 重置到第一页
+        location.href = '/admin/users?' + params.toString();
+    }
+</script>
+{% endblock %}
